@@ -1,1 +1,1 @@
-console.log("Server is okay");
+import "dotenv/config";
