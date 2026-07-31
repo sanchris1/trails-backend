@@ -43,6 +43,12 @@ export const auth = betterAuth({
       },
     },
   },
+
+  emailVerification: {
+    sendVerificationEmail: async ({ url }) => {
+      console.log("Verification URL", url);
+    },
+  },
   emailAndPassword: {
     enabled: true,
   },
