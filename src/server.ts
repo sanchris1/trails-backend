@@ -8,3 +8,5 @@ const app = createApplication();
 app.listen(env.port, () => {
   logger.info(`Server in running on port http://localhost:${env.port}`);
 });
+
+console.log(env.adminEmails);

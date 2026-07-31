@@ -5,4 +5,7 @@ export const env = {
   isProduction: (process.env.NODE_ENV ?? "development") === "production",
   nodeEnv: process.env.NODE_ENV ?? "development",
   logLevel: process.env.LOG_LEVEL ?? "info",
+  googleClientId: process.env.GOOGLE_CLIENT_ID!,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  adminEmails: process.env.ADMIN_EMAILS,
 } as const;
