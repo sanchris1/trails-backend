@@ -6,9 +6,33 @@ import {
   boolean,
   index,
   pgEnum,
+  uuid,
+  varchar,
+  integer,
+  date,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const UserRole = pgEnum("role", ["user", "admin"]);
+export const expeditionStatusEnum = pgEnum("expedition_status", [
+  "scheduled",
+  "ongoing",
+  "cancelled",
+  "completed",
+]);
+export const bookingStatusEnum = pgEnum("booking_status_enum", [
+  "pending",
+  "cancelled",
+  "confirmed",
+]);
+
+export const paymentStatusEnum = pgEnum("payment_status_enum", [
+  "pending",
+  "partially_paid",
+  "paid",
+  "failed",
+  "refunded",
+]);
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
@@ -101,3 +125,78 @@ export const accountRelations = relations(account, ({ one }) => ({
     references: [user.id],
   }),
 }));
+
+export const adventure = pgTable(
+  "adventure",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    category: text("category").notNull(),
+    description: text("description").notNull(),
+    shortDescription: varchar("short_description", { length: 255 }),
+    location: text("location").notNull(),
+    duration: text("duration").notNull(),
+    defaultPrice: integer("default_price").notNull(),
+    defaultCapacity: integer("default_capacity").notNull(),
+    isActive: boolean("is_active").default(true),
+    coverImage: text("cover_image").notNull(),
+    elevationGain: integer("elevation_gain"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [
+    index("adventure_id_index").on(table.id),
+    index("adventure_location_index").on(table.location),
+  ],
+);
+
+export const expedition = pgTable(
+  "expedition",
+  {
+    id: uuid("expedition_id").primaryKey().defaultRandom(),
+    adventureId: uuid("adventure_id")
+      .notNull()
+      .references(() => adventure.id),
+    departureDate: date("departure_date").notNull(),
+    meetingPoint: text("meeting_point").notNull(),
+    guide: text("guide").references(() => user.id),
+    expeditionStatus: expeditionStatusEnum("expedition_status")
+      .default("scheduled")
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow(),
+    updatedAt: timestamp("updated_at").defaultNow(),
+  },
+  (table) => [index("expedition_index").on(table.id)],
+);
+
+export const bookings = pgTable("bookings", {
+  id: uuid("bookings_id").primaryKey().defaultRandom(),
+  userId: text("user_id").references(() => user.id),
+  expeditionId: uuid("expedition_id")
+    .notNull()
+    .references(() => expedition.id),
+  bookingStatus: bookingStatusEnum("booking_status").default("pending"),
+  numberOfParticipants: integer("number_of_participants").default(1),
+  paymentStatus: paymentStatusEnum("payment_status").default("pending"),
+  totalAmount: integer("total_amount").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const bookingParticipants = pgTable(
+  "booking_participants",
+  {
+    id: uuid("booking_participants_id").primaryKey().defaultRandom(),
+    bookingId: uuid("booking_id")
+      .notNull()
+      .references(() => bookings.id),
+    fullName: text("full_name").notNull(),
+    email: text("email").notNull(),
+    phone: varchar("phone").notNull(),
+    medicalNotes: text("medical_notes"),
+    emergencyContact: varchar("emergency_contact").notNull(),
+  },
+  (table) => [
+    uniqueIndex("booking_participants_booking_idx").on(table.bookingId),
+  ],
+);
