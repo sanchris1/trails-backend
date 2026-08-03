@@ -141,6 +141,7 @@ export const adventure = pgTable(
     isActive: boolean("is_active").default(true),
     coverImage: text("cover_image").notNull(),
     elevationGain: integer("elevation_gain"),
+    difficulty: text("difficulty").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },

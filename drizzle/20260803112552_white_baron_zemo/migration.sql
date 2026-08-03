@@ -1,0 +1,1 @@
+ALTER TABLE "adventure" ALTER COLUMN "elevation_gain" DROP NOT NULL;

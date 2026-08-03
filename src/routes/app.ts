@@ -11,6 +11,8 @@ import { auth } from "../lib/auth.js";
 export function createApplication() {
   const app = express();
 
+  app.use(express.json());
+
   app.use("/api", apiRouter);
 
   app.use(cors());
@@ -18,8 +20,6 @@ export function createApplication() {
   app.use(express.urlencoded({ extended: true }));
 
   app.all("/api/auth/{*any}", toNodeHandler(auth));
-
-  app.use(express.json());
 
   app.use(errorHandler);
 
