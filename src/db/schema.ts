@@ -157,7 +157,7 @@ export const expedition = pgTable(
     id: uuid("expedition_id").primaryKey().defaultRandom(),
     adventureId: uuid("adventure_id")
       .notNull()
-      .references(() => adventure.id),
+      .references(() => adventure.id, { onDelete: "cascade" }),
     departureDate: date("departure_date").notNull(),
     meetingPoint: text("meeting_point").notNull(),
     guide: text("guide").references(() => user.id),
@@ -175,7 +175,7 @@ export const bookings = pgTable("bookings", {
   userId: text("user_id").references(() => user.id),
   expeditionId: uuid("expedition_id")
     .notNull()
-    .references(() => expedition.id),
+    .references(() => expedition.id, { onDelete: "cascade" }),
   bookingStatus: bookingStatusEnum("booking_status").default("pending"),
   numberOfParticipants: integer("number_of_participants").default(1),
   paymentStatus: paymentStatusEnum("payment_status").default("pending"),
