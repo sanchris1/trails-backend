@@ -4,7 +4,7 @@ import { expedition } from "../db/schema.js";
 import { and, gte, lte, eq, lt } from "drizzle-orm";
 
 export function startExpeditionStatusJob() {
-  cron.schedule("* * * * *", async () => {
+  cron.schedule("*/10 * * * *", async () => {
     const now = new Date().toISOString().split("T")[0];
 
     await db
