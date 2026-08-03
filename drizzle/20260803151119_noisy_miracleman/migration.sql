@@ -1,0 +1,2 @@
+ALTER TABLE "expedition" ALTER COLUMN "departure_time" SET DATA TYPE timestamp USING "departure_time"::timestamp;--> statement-breakpoint
+ALTER TABLE "expedition" ALTER COLUMN "return_time" SET DATA TYPE timestamp USING "return_time"::timestamp;

@@ -1,0 +1,1 @@
+ALTER TABLE "expedition" ALTER COLUMN "return_date" SET NOT NULL;

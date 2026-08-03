@@ -159,8 +159,11 @@ export const expedition = pgTable(
       .notNull()
       .references(() => adventure.id, { onDelete: "cascade" }),
     departureDate: date("departure_date").notNull(),
+    departureTime: timestamp("departure_time").notNull(),
+    returnDate: date("return_date").notNull(),
+    returnTime: timestamp("return_time"),
     meetingPoint: text("meeting_point").notNull(),
-    guide: text("guide").references(() => user.id),
+    guide: text("guide").references(() => user.id, { onDelete: "cascade" }),
     expeditionStatus: expeditionStatusEnum("expedition_status")
       .default("scheduled")
       .notNull(),
