@@ -10,7 +10,6 @@ import {
   varchar,
   integer,
   date,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const UserRole = pgEnum("role", ["user", "admin"]);
