@@ -1,0 +1,2 @@
+ALTER TABLE "bookings" ADD CONSTRAINT "bookings_user_id_key" UNIQUE("user_id");--> statement-breakpoint
+ALTER TABLE "booking_participants" DROP CONSTRAINT "booking_participants_booking_id_bookings_bookings_id_fkey", ADD CONSTRAINT "booking_participants_booking_id_bookings_bookings_id_fkey" FOREIGN KEY ("booking_id") REFERENCES "bookings"("bookings_id") ON DELETE CASCADE;

@@ -11,8 +11,15 @@ import { cancelExpedition } from "../controllers/expedition/cancelExpedition.js"
 export const expeditionRoutes = Router();
 
 expeditionRoutes.get("/get", fetchAllExpeditions);
-expeditionRoutes.put("/cancel/:expeditionId", cancelExpedition);
+
 expeditionRoutes.get("/get/:expeditionId", fetchExpeditionWithId);
+
+expeditionRoutes.put(
+  "/cancel/:expeditionId",
+  checkUser,
+  requireRole("admin"),
+  cancelExpedition,
+);
 expeditionRoutes.post(
   "/add",
   checkUser,

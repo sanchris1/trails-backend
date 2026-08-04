@@ -175,7 +175,9 @@ export const expedition = pgTable(
 
 export const bookings = pgTable("bookings", {
   id: uuid("bookings_id").primaryKey().defaultRandom(),
-  userId: text("user_id").references(() => user.id),
+  userId: text("user_id")
+    .references(() => user.id)
+    .unique(),
   expeditionId: uuid("expedition_id")
     .notNull()
     .references(() => expedition.id, { onDelete: "cascade" }),
@@ -193,16 +195,14 @@ export const bookingParticipants = pgTable(
     id: uuid("booking_participants_id").primaryKey().defaultRandom(),
     bookingId: uuid("booking_id")
       .notNull()
-      .references(() => bookings.id),
+      .references(() => bookings.id, { onDelete: "cascade" }),
     fullName: text("full_name").notNull(),
-    email: text("email").notNull(),
+    email: text("email").notNull().unique(),
     phone: varchar("phone").notNull(),
     medicalNotes: text("medical_notes"),
     emergencyContact: varchar("emergency_contact").notNull(),
   },
-  (table) => [
-    uniqueIndex("booking_participants_booking_idx").on(table.bookingId),
-  ],
+  (table) => [index("booking_participants_booking_idx").on(table.bookingId)],
 );
 
 export const notification = pgTable("notifications", {
