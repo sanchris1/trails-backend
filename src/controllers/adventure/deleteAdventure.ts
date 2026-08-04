@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../../index.js";
 import { adventure } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
+import { deleteImageFromCloudinary } from "../../helpers/uploadToCloudinary.js";
 
 export async function deleteAdventure(req: Request, res: Response) {
   try {
@@ -23,6 +24,8 @@ export async function deleteAdventure(req: Request, res: Response) {
     }
 
     await db.delete(adventure).where(eq(adventure.id, adventureId));
+
+    await deleteImageFromCloudinary(adventureExists.at(0)?.coverImagePublicId!);
 
     return res.status(200).json({
       success: true,

@@ -18,6 +18,7 @@ export async function addNewAdventure(req: Request, res: Response) {
       coverImage,
       elevationGain,
       difficulty,
+      coverImagePublicId,
     } = req.body as Record<string, string | undefined>;
 
     if (
@@ -31,6 +32,7 @@ export async function addNewAdventure(req: Request, res: Response) {
       !defaultCapacity ||
       !isActive ||
       !coverImage?.trim() ||
+      !coverImagePublicId?.trim() ||
       !difficulty?.trim()
     ) {
       return res.status(401).json({
@@ -63,6 +65,7 @@ export async function addNewAdventure(req: Request, res: Response) {
       defaultPrice: Number(defaultPrice),
       isActive: isActive === "true",
       coverImage,
+      coverImagePublicId,
       elevationGain: elevationGain ? Number(elevationGain) : 0,
       difficulty,
     });

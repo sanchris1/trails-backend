@@ -139,6 +139,7 @@ export const adventure = pgTable(
     defaultCapacity: integer("default_capacity").notNull(),
     isActive: boolean("is_active").default(true),
     coverImage: text("cover_image").notNull(),
+    coverImagePublicId: text("cover_image_public_id").notNull(),
     elevationGain: integer("elevation_gain"),
     difficulty: text("difficulty").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -214,4 +215,15 @@ export const notification = pgTable("notifications", {
   type: text("notification_type").notNull(),
   isRead: boolean("is_read").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const gallery = pgTable("gallery", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  expeditionId: uuid("expedition_id")
+    .notNull()
+    .references(() => expedition.id),
+  imageUrl: text("image_url").notNull(),
+  imagePublicId: text("image_public_id").notNull(),
+  caption: text("caption").notNull(),
+  uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });
