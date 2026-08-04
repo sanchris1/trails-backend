@@ -204,3 +204,15 @@ export const bookingParticipants = pgTable(
     uniqueIndex("booking_participants_booking_idx").on(table.bookingId),
   ],
 );
+
+export const notification = pgTable("notifications", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  message: text("message").notNull(),
+  type: text("notification_type").notNull(),
+  isRead: boolean("is_read").notNull().default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
