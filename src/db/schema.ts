@@ -227,3 +227,14 @@ export const gallery = pgTable("gallery", {
   caption: text("caption").notNull(),
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
 });
+
+export const favorites = pgTable("favorites", {
+  id: uuid("favorites_id").primaryKey().defaultRandom(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  adventureId: uuid("adventure_id")
+    .notNull()
+    .references(() => adventure.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
