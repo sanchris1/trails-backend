@@ -15,4 +15,4 @@ apiRouter.use("/adventures", adventureRoutes);
 apiRouter.use("/expeditions", expeditionRoutes);
 apiRouter.use("/booking", checkUser, bookingRoute);
 apiRouter.use("/image", checkUser, requireRole("admin"), imageUploadRoute);
-apiRouter.use("/gallery", checkUser, requireRole("admin"), galleryRoute);
+apiRouter.use("/gallery", galleryRoute);
