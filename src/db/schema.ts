@@ -10,6 +10,7 @@ import {
   varchar,
   integer,
   date,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 export const UserRole = pgEnum("role", ["user", "admin"]);
@@ -238,3 +239,24 @@ export const favorites = pgTable("favorites", {
     .references(() => adventure.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const reviews = pgTable(
+  "reviews",
+  {
+    id: uuid("reviews_id").primaryKey().defaultRandom(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    expeditionId: uuid("expedition_id")
+      .notNull()
+      .references(() => expedition.id, { onDelete: "cascade" }),
+    rating: integer("rating").notNull().default(1),
+    comment: text("comment").default(""),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date())
+      .defaultNow(),
+  },
+  (table) => [uniqueIndex("review_index").on(table.expeditionId, table.userId)],
+);

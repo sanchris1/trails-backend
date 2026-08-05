@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "review_index" ON "reviews" ("expedition_id","user_id");
