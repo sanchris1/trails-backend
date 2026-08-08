@@ -32,6 +32,7 @@ export async function deleteAdventure(req: Request, res: Response) {
       message: "Adventure deleted successfully",
     });
   } catch (error) {
+    console.log(error);
     const messages =
       error instanceof Error ? error.message : "Internal server error";
     res.status(500).json({

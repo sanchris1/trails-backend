@@ -17,6 +17,7 @@ export type CreateNewExpedition = {
   departureTime: string;
   returnDate: string;
   returnTime: string;
+  guideContact: string;
   expeditionStatus: ExpeditionStatus;
 };
 
@@ -31,6 +32,7 @@ export async function addNewExpedition(req: Request, res: Response) {
       departureTime,
       returnDate,
       returnTime,
+      guideContact,
     } = req.body as CreateNewExpedition;
 
     if (
@@ -38,6 +40,7 @@ export async function addNewExpedition(req: Request, res: Response) {
       !departureDate.trim() ||
       !meetingPoint.trim() ||
       !guide.trim() ||
+      !guideContact ||
       !expeditionStatus.trim()
     ) {
       return res.status(403).json({
@@ -67,6 +70,22 @@ export async function addNewExpedition(req: Request, res: Response) {
       });
     }
 
+    const departureDateTime = new Date(`${departureDate}T${departureTime}`);
+    const returnDateTime = returnTime
+      ? new Date(`${returnDate}T${returnTime}`)
+      : null;
+
+    if (isNaN(departureDateTime.getTime())) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid departure date or time" });
+    }
+    if (returnDateTime && isNaN(returnDateTime.getTime())) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid departure date or time" });
+    }
+
     //create a new expedition
     const newExp = await db
       .insert(expedition)
@@ -76,9 +95,10 @@ export async function addNewExpedition(req: Request, res: Response) {
         guide,
         meetingPoint,
         expeditionStatus,
-        departureTime: new Date(departureTime),
+        departureTime: departureDateTime,
         returnDate,
-        returnTime: returnTime ? new Date(returnTime) : undefined,
+        guideContact,
+        returnTime: returnDateTime,
       })
       .returning();
 

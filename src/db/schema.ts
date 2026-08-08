@@ -164,7 +164,8 @@ export const expedition = pgTable(
     returnDate: date("return_date").notNull(),
     returnTime: timestamp("return_time"),
     meetingPoint: text("meeting_point").notNull(),
-    guide: text("guide").references(() => user.id, { onDelete: "cascade" }),
+    guide: text("guide").notNull(),
+    guideContact: text("guide_contact").notNull(),
     expeditionStatus: expeditionStatusEnum("expedition_status")
       .default("scheduled")
       .notNull(),
@@ -222,7 +223,7 @@ export const gallery = pgTable("gallery", {
   id: uuid("id").defaultRandom().primaryKey(),
   expeditionId: uuid("expedition_id")
     .notNull()
-    .references(() => expedition.id),
+    .references(() => expedition.id, { onDelete: "cascade" }),
   imageUrl: text("image_url").notNull(),
   imagePublicId: text("image_public_id").notNull(),
   caption: text("caption").notNull(),

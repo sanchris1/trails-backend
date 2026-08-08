@@ -9,6 +9,7 @@ import { imageUploadRoute } from "./imageUpload.route.js";
 import { galleryRoute } from "./gallery.route.js";
 import { favoritesRoute } from "./favorites.route.js";
 import { reviewRoute } from "./review.route.js";
+import { merchandiseRoute } from "./merchandise.route.js";
 
 export const apiRouter = Router();
 
@@ -20,3 +21,4 @@ apiRouter.use("/image", checkUser, requireRole("admin"), imageUploadRoute);
 apiRouter.use("/gallery", galleryRoute);
 apiRouter.use("/favorites", checkUser, favoritesRoute);
 apiRouter.use("/review", reviewRoute);
+apiRouter.use("/merchandise", merchandiseRoute);

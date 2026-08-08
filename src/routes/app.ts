@@ -13,9 +13,9 @@ export function createApplication() {
 
   app.use(express.json());
 
-  app.use("/api", apiRouter);
+  app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
-  app.use(cors());
+  app.use("/api", apiRouter);
 
   app.use(express.urlencoded({ extended: true }));
 

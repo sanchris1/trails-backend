@@ -13,7 +13,7 @@ export async function fetchAdventures(req: Request, res: Response) {
       difficulty,
       page = "1",
       limit = "10",
-    } = req.params as Record<string, string | undefined>;
+    } = req.query as Record<string, string | undefined>;
 
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
     const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 10));

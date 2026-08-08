@@ -1,0 +1,1 @@
+ALTER TABLE "gallery" DROP CONSTRAINT "gallery_expedition_id_expedition_expedition_id_fkey", ADD CONSTRAINT "gallery_expedition_id_expedition_expedition_id_fkey" FOREIGN KEY ("expedition_id") REFERENCES "expedition"("expedition_id") ON DELETE CASCADE;
