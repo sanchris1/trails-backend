@@ -16,6 +16,8 @@ export async function editExpedition(req: Request, res: Response) {
       departureTime,
       returnDate,
       returnTime,
+      guide,
+      guideContact,
     } = req.body as CreateNewExpedition;
 
     if (!expeditionId) {
@@ -56,6 +58,11 @@ export async function editExpedition(req: Request, res: Response) {
     if (departureDate.trim())
       updateExpeditionData.departureDate = departureDate.trim();
 
+    if (guide.trim()) updateExpeditionData.guide = guide.trim();
+
+    if (guideContact.trim())
+      updateExpeditionData.guideContact = guideContact.trim();
+
     if (meetingPoint.trim())
       updateExpeditionData.meetingPoint = meetingPoint.trim();
 
@@ -63,11 +70,16 @@ export async function editExpedition(req: Request, res: Response) {
       updateExpeditionData.expeditionStatus = expeditionStatus.trim();
 
     if (departureTime.trim())
-      updateExpeditionData.departureTime = departureTime.trim();
+      updateExpeditionData.departureTime = new Date(
+        `${departureDate}T${departureTime}:00`,
+      );
 
     if (returnDate.trim()) updateExpeditionData.returnDate = returnDate.trim();
 
-    if (returnTime.trim()) updateExpeditionData.returnTime = returnTime.trim();
+    if (returnTime.trim())
+      updateExpeditionData.returnTime = new Date(
+        `${returnDate}T${returnTime}:00`,
+      );
 
     if (Object.keys(updateExpeditionData).length === 0) {
       return res.status(402).json({
@@ -87,6 +99,7 @@ export async function editExpedition(req: Request, res: Response) {
       data: updatedExpedition,
     });
   } catch (error) {
+    console.error(error);
     const message =
       error instanceof Error ? error.message : "Internal server error";
     res.status(500).json({

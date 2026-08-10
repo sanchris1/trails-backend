@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { db } from "../../index.js";
-import { adventure, expedition } from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import { adventure, bookings, expedition } from "../../db/schema.js";
+import { eq, sql } from "drizzle-orm";
 
 export async function fetchExpeditionWithId(req: Request, res: Response) {
   try {
@@ -15,10 +15,16 @@ export async function fetchExpeditionWithId(req: Request, res: Response) {
     }
 
     const expeditionDetails = await db
-      .select()
+      .select({
+        expedition,
+        adventure,
+        bookedParticipants: sql<number>`COALESCE(SUM(${bookings.numberOfParticipants}),0)`,
+      })
       .from(expedition)
       .where(eq(expedition.id, expeditionId))
       .innerJoin(adventure, eq(expedition.adventureId, adventure.id))
+      .leftJoin(bookings, eq(expedition.adventureId, adventure.id))
+      .groupBy(expedition.id, adventure.id)
       .limit(1);
 
     if (expeditionDetails.length === 0) {
@@ -27,9 +33,23 @@ export async function fetchExpeditionWithId(req: Request, res: Response) {
         .json({ success: false, message: "Expedition not found" });
     }
 
+    const result = expeditionDetails[0];
+
+    const bookedParticipants = Number(result.bookedParticipants) || 0;
+
+    const slotsLeft = Math.max(
+      result.adventure.defaultCapacity - bookedParticipants,
+      0,
+    );
+
     return res.status(200).json({
       success: true,
-      data: expeditionDetails.at(0),
+      data: {
+        ...result.expedition,
+        adventure: result.adventure,
+        bookedParticipants,
+        slotsLeft,
+      },
     });
   } catch (error) {
     const messages =

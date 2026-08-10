@@ -23,7 +23,7 @@ export async function fetchAdventures(req: Request, res: Response) {
 
     //search
     if (search?.trim()) {
-      const term = `%${search.trim()}`;
+      const term = `%${search.trim()}%`;
       conditions.push(
         or(
           ilike(adventure.title, term),
