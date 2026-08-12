@@ -5,9 +5,10 @@ import { and, eq, lte } from "drizzle-orm";
 
 export async function addImagesToGallery(req: Request, res: Response) {
   try {
+    console.log("Reaching...");
     const { expeditionId } = req.params as { expeditionId: string };
 
-    const { uploads } = req.body as any;
+    const images = req.body;
 
     const today = new Date().toLocaleString().split("T")[0];
 
@@ -26,14 +27,21 @@ export async function addImagesToGallery(req: Request, res: Response) {
     if (isExpedition.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Expedition not found",
+        message:
+          "Gallery images can only be added after the expedition has ended",
+      });
+    }
+    if (!Array.isArray(images) || images.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "At least one image is required",
       });
     }
 
-    const rows = uploads.map((image: any) => ({
+    const rows = images.map((image: any) => ({
       expeditionId,
-      imageUrl: image.secure_url,
-      imagePublicId: image.public_id,
+      imageUrl: image.imageUrl,
+      imagePublicId: image.imagePublicId,
       caption: image.caption,
     }));
 
