@@ -9,6 +9,13 @@ export const auth = betterAuth({
 
   trustedOrigins: ["http://localhost:3000", "https://trails-theta.vercel.app"],
 
+  account: {
+    storeStateStrategy: "cookie",
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+  },
   databaseHooks: {
     user: {
       create: {

@@ -5,10 +5,11 @@ import { and, eq, lte } from "drizzle-orm";
 
 export async function addImagesToGallery(req: Request, res: Response) {
   try {
-    console.log("Reaching...");
     const { expeditionId } = req.params as { expeditionId: string };
 
     const images = req.body;
+
+    console.log(images);
 
     const today = new Date().toLocaleString().split("T")[0];
 

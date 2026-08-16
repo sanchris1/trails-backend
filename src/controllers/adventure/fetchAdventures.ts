@@ -7,6 +7,7 @@ export async function fetchAdventures(req: Request, res: Response) {
   try {
     const {
       search,
+      location,
       sortBy = "createdAt",
       sortOrder = "desc",
       category,
@@ -31,8 +32,15 @@ export async function fetchAdventures(req: Request, res: Response) {
           ilike(adventure.description, term),
           ilike(adventure.location, term),
           ilike(adventure.category, term),
+          ilike(adventure.location, term),
         ),
       );
+    }
+
+    const locationTerm = location?.trim();
+
+    if (locationTerm) {
+      conditions.push(ilike(adventure.location, `%${locationTerm}`));
     }
 
     if (category) conditions.push(eq(adventure.category, category));
