@@ -13,7 +13,7 @@ export function createApplication() {
 
   const allowedOrigins = [
     "http://localhost:3000",
-    "https://trails-theta.vercel.app",
+    "https://trails-and-memoirs.vercel.app",
   ];
 
   app.use(
