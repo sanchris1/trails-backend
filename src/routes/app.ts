@@ -33,14 +33,13 @@ export function createApplication() {
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     }),
   );
+  app.use(express.json());
 
   app.use("/api", apiRouter);
 
   app.use(express.urlencoded({ extended: true }));
 
   app.all("/api/auth/{*any}", toNodeHandler(auth));
-
-  app.use(express.json());
 
   app.use(errorHandler);
 
