@@ -10,5 +10,7 @@ export const env = {
   adminEmails: process.env.ADMIN_EMAILS,
   cloudinaryCloudName: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
+  betterAuthUrl:
+    process.env.BETTER_AUTH_URL ?? "https://trails-backend-xu2z.onrender.com",
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
 } as const;

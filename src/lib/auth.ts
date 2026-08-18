@@ -7,10 +7,24 @@ import * as schema from "../../src/db/schema.js";
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
 
+  baseURL: env.betterAuthUrl,
+
   trustedOrigins: [
     "http://localhost:3000",
     "https://trails-and-memoirs.vercel.app",
   ],
+
+  // ===== CRITICAL FOR PRODUCTION =====
+  advanced: {
+    defaultCookieAttributes: {
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      path: "/",
+      partitioned: true,
+    },
+  },
+  // ==================================
 
   account: {
     storeStateStrategy: "cookie",
@@ -19,6 +33,7 @@ export const auth = betterAuth({
       trustedProviders: ["google"],
     },
   },
+
   databaseHooks: {
     user: {
       create: {
@@ -36,6 +51,7 @@ export const auth = betterAuth({
       },
     },
   },
+
   session: {
     expiresIn: 60 * 60 * 24,
     updateAge: 60 * 60,
@@ -44,6 +60,7 @@ export const auth = betterAuth({
       maxAge: 60 * 5,
     },
   },
+
   user: {
     additionalFields: {
       role: {
@@ -59,9 +76,11 @@ export const auth = betterAuth({
       console.log("Verification URL", url);
     },
   },
+
   emailAndPassword: {
     enabled: true,
   },
+
   socialProviders: {
     google: {
       clientId: env.googleClientId,

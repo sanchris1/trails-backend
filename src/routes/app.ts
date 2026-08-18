@@ -1,12 +1,10 @@
-//entry file for express
-
 import express from "express";
-import { errorHandler } from "../middleware/errorHandler.js";
-import { notFound } from "../middleware/notFound.js";
 import cors from "cors";
-import { apiRouter } from "./index.js";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "../lib/auth.js";
+import { apiRouter } from "./index.js";
+import { errorHandler } from "../middleware/errorHandler.js";
+import { notFound } from "../middleware/notFound.js";
 
 export function createApplication() {
   const app = express();
@@ -16,10 +14,10 @@ export function createApplication() {
     "https://trails-and-memoirs.vercel.app",
   ];
 
+  // 1. CORS first
   app.use(
     cors({
       origin: function (origin, callback) {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
 
         if (allowedOrigins.includes(origin)) {
@@ -33,16 +31,19 @@ export function createApplication() {
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
     }),
   );
-  app.use(express.json());
 
-  app.use("/api", apiRouter);
-
-  app.use(express.urlencoded({ extended: true }));
-
+  // 2. Better Auth handler BEFORE express.json()
   app.all("/api/auth/{*any}", toNodeHandler(auth));
 
-  app.use(errorHandler);
+  // 3. Body parsers only for the rest of the app
+  app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
+  // 4. Your other API routes
+  app.use("/api", apiRouter);
+
+  // 5. Error handling
+  app.use(errorHandler);
   app.use(notFound);
 
   return app;
