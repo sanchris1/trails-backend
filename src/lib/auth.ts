@@ -7,7 +7,10 @@ import * as schema from "../../src/db/schema.js";
 export const auth = betterAuth({
   database: drizzleAdapter(db, { provider: "pg", schema }),
 
-  trustedOrigins: ["http://localhost:3000", "https://trails-theta.vercel.app"],
+  trustedOrigins: [
+    "http://localhost:3000",
+    "https://trails-and-memoirs.vercel.app",
+  ],
 
   account: {
     storeStateStrategy: "cookie",
