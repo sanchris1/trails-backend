@@ -14,17 +14,15 @@ export const auth = betterAuth({
     "https://trails-and-memoirs.vercel.app",
   ],
 
-  // ===== CRITICAL FOR PRODUCTION =====
   advanced: {
     defaultCookieAttributes: {
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      secure: true,
       httpOnly: true,
       path: "/",
       partitioned: true,
     },
   },
-  // ==================================
 
   account: {
     storeStateStrategy: "cookie",
