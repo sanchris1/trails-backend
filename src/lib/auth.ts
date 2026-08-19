@@ -25,7 +25,7 @@ export const auth = betterAuth({
   },
 
   account: {
-    storeStateStrategy: "cookie",
+    storeStateStrategy: "database",
     accountLinking: {
       enabled: true,
       trustedProviders: ["google"],
