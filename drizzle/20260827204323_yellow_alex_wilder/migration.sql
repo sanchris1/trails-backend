@@ -1,0 +1,1 @@
+ALTER TABLE "merchandise_colors" RENAME COLUMN "merchandise_color" TO "merchandise_colors";

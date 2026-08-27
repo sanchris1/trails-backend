@@ -1,0 +1,2 @@
+ALTER TABLE "merchandise_images" ALTER COLUMN "merchandise_images" SET DATA TYPE jsonb USING "merchandise_images"::jsonb;--> statement-breakpoint
+ALTER TABLE "merchandise_images" ALTER COLUMN "merchandise_images" SET DEFAULT '[]';

@@ -11,6 +11,7 @@ import {
   integer,
   date,
   uniqueIndex,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
 export const UserRole = pgEnum("role", ["user", "admin"]);
@@ -32,6 +33,15 @@ export const paymentStatusEnum = pgEnum("payment_status_enum", [
   "paid",
   "failed",
   "refunded",
+]);
+
+export const merchandiseSizesEnum = pgEnum("merchandise_sizes_enum", [
+  "Small",
+  "Medium",
+  "Large",
+  "XL",
+  "XXL",
+  "Custom",
 ]);
 
 export const user = pgTable("user", {
@@ -260,4 +270,60 @@ export const reviews = pgTable(
       .defaultNow(),
   },
   (table) => [uniqueIndex("review_index").on(table.expeditionId, table.userId)],
+);
+
+export const merchandise = pgTable(
+  "merchandise",
+  {
+    id: uuid("merchandise").primaryKey().defaultRandom(),
+    title: text("merchandise_title").notNull(),
+    price: integer("merchandise_price").notNull(),
+    category: text("category").notNull(),
+    description: text("description").notNull(),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date())
+      .defaultNow(),
+  },
+  (table) => [index("merchandise_index").on(table.id)],
+);
+
+export const merchandiseColors = pgTable("merchandise_colors", {
+  id: uuid("merchandise_color_id").primaryKey().defaultRandom(),
+  colors: text("merchandise_colors").array().notNull(),
+  merchandiseId: uuid("merchandise_id")
+    .notNull()
+    .references(() => merchandise.id, { onDelete: "cascade" }),
+});
+
+export const merchandiseImages = pgTable("merchandise_images", {
+  id: uuid("merchandise_images_id").primaryKey().defaultRandom(),
+  images: jsonb("merchandise_images")
+    .$type<{ url: string; publicId: string }[]>()
+    .notNull()
+    .default([]),
+
+  merchandiseId: uuid("merchandise_id")
+    .notNull()
+    .references(() => merchandise.id, { onDelete: "cascade" }),
+});
+
+export const favoriteMerchandise = pgTable(
+  "favorite_merchandise",
+  {
+    id: uuid("favorite_merchandise_id").defaultRandom().primaryKey(),
+    merchandiseId: uuid("merchandise_id")
+      .notNull()
+      .references(() => merchandise.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at")
+      .notNull()
+      .$onUpdate(() => new Date())
+      .defaultNow(),
+  },
+  (table) => [index("favorite_merchandise_index").on(table.id)],
 );

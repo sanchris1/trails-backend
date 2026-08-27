@@ -7,7 +7,7 @@ import {
   notification,
   user,
 } from "../../db/schema.js";
-import { and, eq, ne, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 export async function bookExpedition(req: Request, res: Response) {
   try {
