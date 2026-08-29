@@ -3,6 +3,7 @@ import { checkUser } from "../middleware/checkUserMiddleware.js";
 import { requireRole } from "../middleware/requireRoleMiddleware.js";
 import { addMerchandise } from "../controllers/shop/addMerchandise.js";
 import { deleteMerchandise } from "../controllers/shop/deleteMerchandise.js";
+import { fetchMerchandise } from "../controllers/shop/fetchMerchandise.js";
 
 export const shopRouter = Router();
 
@@ -13,3 +14,4 @@ shopRouter.delete(
   requireRole("admin"),
   deleteMerchandise,
 );
+shopRouter.get("/", fetchMerchandise);
