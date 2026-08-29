@@ -5,6 +5,7 @@ import {
   merchandiseColors,
   merchandiseImages,
 } from "../../db/schema.js";
+import { eq } from "drizzle-orm";
 
 export async function addMerchandise(req: Request, res: Response) {
   try {
@@ -42,6 +43,19 @@ export async function addMerchandise(req: Request, res: Response) {
       return res.status(401).json({
         success: false,
         message: "Please add all the fields",
+      });
+    }
+
+    //check if mech with title exists
+    const merchandiseExists = await db
+      .select()
+      .from(merchandise)
+      .where(eq(merchandise.title, title));
+
+    if (merchandiseExists.at(0)) {
+      return res.status(401).json({
+        success: false,
+        message: "Merchandise with the title already exists",
       });
     }
 
