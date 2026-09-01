@@ -1,6 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { toNodeHandler } from "better-auth/node";
 import { auth } from "../lib/auth.js";
 import { apiRouter } from "./index.js";
 import { errorHandler } from "../middleware/errorHandler.js";
@@ -32,17 +31,11 @@ export function createApplication() {
     }),
   );
 
-  // 2. Better Auth handler BEFORE express.json()
-  app.all("/api/auth/{*any}", toNodeHandler(auth));
-
-  // 3. Body parsers only for the rest of the app
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
 
-  // 4. Your other API routes
   app.use("/api", apiRouter);
 
-  // 5. Error handling
   app.use(errorHandler);
   app.use(notFound);
 
