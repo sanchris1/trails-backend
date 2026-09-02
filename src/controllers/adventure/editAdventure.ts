@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { db } from "../../index.js";
 import { adventure } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
-import { success } from "better-auth";
 
 export async function editAdventure(req: Request, res: Response) {
   try {

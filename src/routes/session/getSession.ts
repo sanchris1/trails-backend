@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { auth } from "../../lib/auth.js";
 
 export async function getSession(req: Request, res: Response) {
   try {
