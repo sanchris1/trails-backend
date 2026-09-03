@@ -1,0 +1,1 @@
+ALTER TABLE "refresh_token" DROP CONSTRAINT "refresh_token_user_id_key";

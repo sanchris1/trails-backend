@@ -1,24 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        id: string;
-        role?: string | null;
-        email: string;
-        name: string;
-        image?: string | null;
-      };
-      session?: {
-        id: string;
-        userId: string;
-        expiresAt: Date;
-        token?: string;
-      };
-    }
-  }
-}
 export async function checkUser(
   req: Request,
   res: Response,

@@ -1,0 +1,2 @@
+ALTER TABLE "refresh_token" ADD CONSTRAINT "refresh_token_user_id_key" UNIQUE("user_id");--> statement-breakpoint
+ALTER TABLE "refresh_token" DROP CONSTRAINT "refresh_token_user_id_user_id_fkey", ADD CONSTRAINT "refresh_token_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;

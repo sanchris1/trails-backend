@@ -24,6 +24,9 @@
   "type": "module",
   "devDependencies": {
     "@tsconfig/node24": "^24.0.4",
+    "@types/bcrypt": "^6.0.0",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.2.0",
     "@types/node": "^26.1.2",
     "@types/pg": "^8.20.0",

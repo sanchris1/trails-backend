@@ -11,7 +11,7 @@ import { favoritesRoute } from "./favorites.route.js";
 import { reviewRoute } from "./review.route.js";
 import { merchandiseRoute } from "./merchandise.route.js";
 import { shopRouter } from "./shop.route.js";
-import { getSession } from "./session/getSession.js";
+import { authRoutes } from "./auth.route.js";
 
 export const apiRouter = Router();
 
@@ -25,4 +25,4 @@ apiRouter.use("/favorites", checkUser, favoritesRoute);
 apiRouter.use("/review", reviewRoute);
 apiRouter.use("/merchandise", merchandiseRoute);
 apiRouter.use("/shop", shopRouter);
-apiRouter.use("/me", getSession);
+apiRouter.use("/auth", authRoutes);

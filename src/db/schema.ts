@@ -57,6 +57,16 @@ export const user = pgTable("user", {
     .defaultNow(),
 });
 
+export const refreshTokens = pgTable("refresh_token", {
+  id: uuid("refresh_token_id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  tokenHash: varchar("token_hash", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const adventure = pgTable(
   "adventure",
   {
