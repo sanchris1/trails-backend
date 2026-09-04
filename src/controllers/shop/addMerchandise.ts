@@ -9,14 +9,6 @@ import { eq } from "drizzle-orm";
 
 export async function addMerchandise(req: Request, res: Response) {
   try {
-    console.log(req.body);
-
-    const userRole = req.user?.role;
-
-    if (userRole !== "admin") {
-      return res.status(403).json({ success: false, message: "Unauthorized!" });
-    }
-
     const { title, price, description, colors, images, category } =
       req.body as {
         title: string;

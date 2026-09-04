@@ -10,9 +10,6 @@ import { and, eq, gt } from "drizzle-orm";
 import { env } from "../../config/env.js";
 
 export async function refresh(req: Request, res: Response) {
-  console.log("===== REFRESH HIT =====");
-  console.log("Cookies received:", req.cookies);
-
   try {
     const rawCookieToken = req.cookies.refreshToken;
 
