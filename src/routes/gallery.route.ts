@@ -11,13 +11,13 @@ export const galleryRoute = Router();
 galleryRoute.post(
   "/add/:expeditionId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   addImagesToGallery,
 );
 galleryRoute.delete(
   "/delete/:expeditionId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   deleteGalleryImage,
 );
 galleryRoute.get("/fetch-all", fetchGalleryImages);

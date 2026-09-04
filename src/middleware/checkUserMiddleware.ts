@@ -1,4 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import jwt from "jsonwebtoken";
+interface TokenPayload {
+  userId: string;
+  iat: number;
+  exp: number;
+}
 
 export async function checkUser(
   req: Request,
@@ -6,18 +12,30 @@ export async function checkUser(
   next: NextFunction,
 ) {
   try {
-    // const session = await auth.api.getSession({
-    //   headers: fromNodeHeaders(req.headers),
-    // });
-    // if (!session) {
-    //   return res.status(400).json({
-    //     success: false,
-    //     message: "Please authenticate",
-    //   });
-    // }
-    // req.user = session.user;
-    // req.session = session.session;
-    // next();
+    const authHeader = req.headers["authorization"];
+
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Access token missing or malformed",
+      });
+    }
+
+    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET!, (error, decoded) => {
+      if (error) {
+        return res.status(401).json({
+          success: false,
+          message: "Access token expired or invalid",
+        });
+      }
+      const payload = decoded as TokenPayload;
+
+      req.userId = payload.userId;
+
+      next();
+    });
   } catch (error) {
     const messages =
       error instanceof Error ? error.message : "Session or expired";

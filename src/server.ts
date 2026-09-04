@@ -3,11 +3,8 @@ import { createApplication } from "./routes/app.js";
 import { env } from "./config/env.js";
 import { logger } from "./lib/logger.js";
 import { startExpeditionStatusJob } from "./jobs/expeditionStatus.job.js";
-import cookieParser from "cookie-parser";
 
 const app = createApplication();
-
-app.use(cookieParser());
 
 startExpeditionStatusJob();
 

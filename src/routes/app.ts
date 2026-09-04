@@ -3,6 +3,7 @@ import cors from "cors";
 import { apiRouter } from "./index.js";
 import { errorHandler } from "../middleware/errorHandler.js";
 import { notFound } from "../middleware/notFound.js";
+import cookieParser from "cookie-parser";
 
 export function createApplication() {
   const app = express();
@@ -12,7 +13,6 @@ export function createApplication() {
     "https://trails-and-memoirs.vercel.app",
   ];
 
-  // 1. CORS first
   app.use(
     cors({
       origin: function (origin, callback) {
@@ -31,6 +31,8 @@ export function createApplication() {
   );
 
   app.use(express.json());
+  app.use(cookieParser());
+
   app.use(express.urlencoded({ extended: true }));
 
   app.use("/api", apiRouter);

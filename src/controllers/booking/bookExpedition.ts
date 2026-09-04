@@ -11,7 +11,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 export async function bookExpedition(req: Request, res: Response) {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
     const { expeditionId } = req.params as { expeditionId: string };
     const { numberOfParticipants } = req.body;
 

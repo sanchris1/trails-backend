@@ -7,11 +7,11 @@ import { fetchMerchandise } from "../controllers/shop/fetchMerchandise.js";
 
 export const shopRouter = Router();
 
-shopRouter.post("/add", checkUser, requireRole("admin"), addMerchandise);
+shopRouter.post("/add", checkUser, requireRole, addMerchandise);
 shopRouter.delete(
   "/delete/:merchandiseId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   deleteMerchandise,
 );
 shopRouter.get("/", fetchMerchandise);

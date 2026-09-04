@@ -19,7 +19,7 @@ apiRouter.use(healthRouter);
 apiRouter.use("/adventures", adventureRoutes);
 apiRouter.use("/expeditions", expeditionRoutes);
 apiRouter.use("/booking", checkUser, bookingRoute);
-apiRouter.use("/image", checkUser, requireRole("admin"), imageUploadRoute);
+apiRouter.use("/image", checkUser, requireRole, imageUploadRoute);
 apiRouter.use("/gallery", galleryRoute);
 apiRouter.use("/favorites", checkUser, favoritesRoute);
 apiRouter.use("/review", reviewRoute);

@@ -17,25 +17,20 @@ expeditionRoutes.get("/get/:expeditionId", fetchExpeditionWithId);
 expeditionRoutes.put(
   "/cancel/:expeditionId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   cancelExpedition,
 );
-expeditionRoutes.post(
-  "/add",
-  checkUser,
-  requireRole("admin"),
-  addNewExpedition,
-);
+expeditionRoutes.post("/add", checkUser, requireRole, addNewExpedition);
 expeditionRoutes.delete(
   "/delete/:expeditionId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   deleteExpedition,
 );
 
 expeditionRoutes.put(
   "/edit/:expeditionId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   editExpedition,
 );

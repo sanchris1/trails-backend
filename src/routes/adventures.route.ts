@@ -11,16 +11,16 @@ export const adventureRoutes = Router();
 
 adventureRoutes.get("/get/:adventureId", fetchAdventureWithId);
 adventureRoutes.get("/get", fetchAdventures);
-adventureRoutes.post("/add", checkUser, requireRole("admin"), addNewAdventure);
+adventureRoutes.post("/add", checkUser, requireRole, addNewAdventure);
 adventureRoutes.delete(
   "/delete/:adventureId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   deleteAdventure,
 );
 adventureRoutes.put(
   "/edit/:adventureId",
   checkUser,
-  requireRole("admin"),
+  requireRole,
   editAdventure,
 );

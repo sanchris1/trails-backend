@@ -9,6 +9,7 @@ import {
   generateRawRefreshToken,
   hashToken,
 } from "../../helpers/authUtils.js";
+import { env } from "../../config/env.js";
 
 export async function signupUser(req: Request, res: Response) {
   try {
@@ -46,10 +47,16 @@ export async function signupUser(req: Request, res: Response) {
 
     const hashedPassword = await encodePassword(password, 12);
 
+    const adminEmails = process.env.ADMIN_EMAILS?.split(",") ?? [];
+
+    const role: "user" | "admin" = adminEmails.includes(email)
+      ? "admin"
+      : "user";
+
     //creating the user
     const [newlyCreatedUser] = await db
       .insert(user)
-      .values({ name, email, password: hashedPassword })
+      .values({ name, email, password: hashedPassword, role })
       .returning();
 
     const accessToken = generateAccessToken(newlyCreatedUser.id);
@@ -67,8 +74,9 @@ export async function signupUser(req: Request, res: Response) {
 
     res.cookie("refreshToken", rawRefreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: env.isProduction,
+      sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

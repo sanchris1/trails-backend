@@ -16,7 +16,7 @@ bookingRoute.get("/fetch/:bookingId", fetchBookingDetails);
 bookingRoute.get(
   "/fetch-all",
 
-  requireRole("admin"),
+  requireRole,
   fetchAllBookings,
 );
 bookingRoute.get("/fetch", fetchUserBookings);

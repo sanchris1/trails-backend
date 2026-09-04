@@ -8,4 +8,4 @@ export const favoritesRoute = Router();
 
 favoritesRoute.put("/toggle/:adventureId", toggleFavorites);
 favoritesRoute.get("/fetch-user", fetchUserFavorites);
-favoritesRoute.get("/fetch", requireRole("admin"), fetchFavorites);
+favoritesRoute.get("/fetch", requireRole, fetchFavorites);

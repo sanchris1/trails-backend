@@ -9,6 +9,7 @@ import {
   generateRawRefreshToken,
   hashToken,
 } from "../../helpers/authUtils.js";
+import { env } from "../../config/env.js";
 
 export async function loginUser(req: Request, res: Response) {
   try {
@@ -70,8 +71,9 @@ export async function loginUser(req: Request, res: Response) {
 
     res.cookie("refreshToken", rawRefreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: env.isProduction,
+      sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

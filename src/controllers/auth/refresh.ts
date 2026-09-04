@@ -7,10 +7,14 @@ import {
 import { db } from "../../index.js";
 import { refreshTokens } from "../../db/schema.js";
 import { and, eq, gt } from "drizzle-orm";
+import { env } from "../../config/env.js";
 
 export async function refresh(req: Request, res: Response) {
+  console.log("===== REFRESH HIT =====");
+  console.log("Cookies received:", req.cookies);
+
   try {
-    const rawCookieToken = req.cookies.refreshTokens;
+    const rawCookieToken = req.cookies.refreshToken;
 
     if (!rawCookieToken) {
       return res.status(404).json({
@@ -57,8 +61,9 @@ export async function refresh(req: Request, res: Response) {
 
     res.cookie("refreshToken", newRawRefreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: env.isProduction,
+      sameSite: "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
