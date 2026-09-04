@@ -6,7 +6,7 @@ import { db } from "../../index.js";
 export const deleteReviews = async (req: Request, res: Response) => {
   try {
     const { expeditionId } = req.params as { expeditionId: string };
-    const userId = req.user?.id!;
+    const userId = req.userId!;
 
     const expeditionExists = await db
       .select()

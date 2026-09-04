@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 
 export async function toggleFavorites(req: Request, res: Response) {
   try {
-    const userId = req.user?.id!;
+    const userId = req.userId!;
     const { adventureId } = req.params as { adventureId: string };
 
     const adventureExists = await db

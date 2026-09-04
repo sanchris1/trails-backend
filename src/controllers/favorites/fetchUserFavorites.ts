@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export const fetchUserFavorites = async (req: Request, res: Response) => {
   try {
-    const userId = req.user?.id!;
+    const userId = req.userId!;
 
     const allUserFavorites = await db
       .select()

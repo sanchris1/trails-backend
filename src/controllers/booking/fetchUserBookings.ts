@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function fetchUserBookings(req: Request, res: Response) {
   try {
-    const userId = req.user?.id;
+    const userId = req.userId;
 
     if (!userId) {
       return res.status(403).json({

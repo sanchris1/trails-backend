@@ -9,7 +9,7 @@ import { db } from "../../index.js";
 
 export async function cancelBooking(req: Request, res: Response) {
   try {
-    const userId = req.user?.id!;
+    const userId = req.userId!;
 
     const { bookingId } = req.params as {
       bookingId: string;
