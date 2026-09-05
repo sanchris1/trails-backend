@@ -1,8 +1,9 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import { env } from "../config/env.js";
 
 export function generateAccessToken(userId: string): string {
-  return jwt.sign({ userId }, process.env.REFRESH_TOKEN_SECRET!, {
+  return jwt.sign({ userId }, env.refreshToken!, {
     expiresIn: "15m",
   });
 }

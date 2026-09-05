@@ -74,8 +74,8 @@ export async function signupUser(req: Request, res: Response) {
 
     res.cookie("refreshToken", rawRefreshToken, {
       httpOnly: true,
-      secure: env.isProduction,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });

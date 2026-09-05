@@ -58,8 +58,8 @@ export async function refresh(req: Request, res: Response) {
 
     res.cookie("refreshToken", newRawRefreshToken, {
       httpOnly: true,
-      secure: env.isProduction,
-      sameSite: "lax",
+      secure: true,
+      sameSite: "none",
       path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
