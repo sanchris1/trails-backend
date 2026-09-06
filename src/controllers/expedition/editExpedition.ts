@@ -92,10 +92,13 @@ export async function editExpedition(req: Request, res: Response) {
       });
     }
 
-    const updatedExpedition = await db.update(expedition).set({
-      ...updateExpeditionData,
-      updatedAt: new Date(),
-    });
+    const updatedExpedition = await db
+      .update(expedition)
+      .set({
+        ...updateExpeditionData,
+        updatedAt: new Date(),
+      })
+      .where(eq(expedition.id, expeditionId));
 
     return res.status(200).json({
       success: true,
