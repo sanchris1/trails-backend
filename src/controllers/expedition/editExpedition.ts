@@ -18,6 +18,7 @@ export async function editExpedition(req: Request, res: Response) {
       returnTime,
       guide,
       guideContact,
+      expeditionTitle,
     } = req.body as CreateNewExpedition;
 
     if (!expeditionId) {
@@ -57,6 +58,9 @@ export async function editExpedition(req: Request, res: Response) {
 
     if (departureDate.trim())
       updateExpeditionData.departureDate = departureDate.trim();
+
+    if (expeditionTitle.trim())
+      updateExpeditionData.expeditionTitle = expeditionTitle.trim();
 
     if (guide.trim()) updateExpeditionData.guide = guide.trim();
 

@@ -9,8 +9,6 @@ export async function addImagesToGallery(req: Request, res: Response) {
 
     const images = req.body;
 
-    console.log(images);
-
     const today = new Date().toLocaleString().split("T")[0];
 
     const isExpedition = await db

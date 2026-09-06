@@ -100,6 +100,7 @@ export const expedition = pgTable(
     adventureId: uuid("adventure_id")
       .notNull()
       .references(() => adventure.id, { onDelete: "cascade" }),
+    expeditionTitle: text("expedition_title"),
     departureDate: date("departure_date").notNull(),
     departureTime: timestamp("departure_time").notNull(),
     returnDate: date("return_date").notNull(),

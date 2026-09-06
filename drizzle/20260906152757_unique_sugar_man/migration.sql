@@ -1,0 +1,1 @@
+ALTER TABLE "expedition" ADD COLUMN "expedition_title" text;

@@ -15,6 +15,7 @@ export type CreateNewExpedition = {
   meetingPoint: string;
   guide: string;
   departureTime: string;
+  expeditionTitle: string;
   returnDate: string;
   returnTime: string;
   guideContact: string;
@@ -33,6 +34,7 @@ export async function addNewExpedition(req: Request, res: Response) {
       returnDate,
       returnTime,
       guideContact,
+      expeditionTitle,
     } = req.body as CreateNewExpedition;
 
     if (
@@ -98,6 +100,7 @@ export async function addNewExpedition(req: Request, res: Response) {
         departureTime: departureDateTime,
         returnDate,
         guideContact,
+        expeditionTitle: expeditionTitle || null,
         returnTime: returnDateTime,
       })
       .returning();
