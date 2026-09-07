@@ -61,7 +61,7 @@ export async function fetchAllExpeditions(req: Request, res: Response) {
 
       case "departure_asc":
       default:
-        orderBy = asc(expedition.departureTime);
+        orderBy = desc(expedition.departureTime);
     }
 
     const results = await db

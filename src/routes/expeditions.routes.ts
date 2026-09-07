@@ -7,6 +7,7 @@ import { editExpedition } from "../controllers/expedition/editExpedition.js";
 import { fetchAllExpeditions } from "../controllers/expedition/fetchAllExpeditions.js";
 import { fetchExpeditionWithId } from "../controllers/expedition/fetchExpeditionWithId.js";
 import { cancelExpedition } from "../controllers/expedition/cancelExpedition.js";
+import { fetchFeaturedExpedition } from "../controllers/expedition/fetchFeaturedExpedition.js";
 
 export const expeditionRoutes = Router();
 
@@ -34,3 +35,5 @@ expeditionRoutes.put(
   requireRole,
   editExpedition,
 );
+
+expeditionRoutes.get("/featured", fetchFeaturedExpedition);
