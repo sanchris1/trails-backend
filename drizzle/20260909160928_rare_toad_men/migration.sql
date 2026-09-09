@@ -1,0 +1,1 @@
+ALTER TABLE "booking_participants" DROP CONSTRAINT "booking_participants_email_key";

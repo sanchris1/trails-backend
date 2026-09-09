@@ -122,6 +122,7 @@ export async function bookExpedition(req: Request, res: Response) {
       data: newBooking,
     });
   } catch (error) {
+    console.log(error);
     const message =
       error instanceof Error
         ? error.message

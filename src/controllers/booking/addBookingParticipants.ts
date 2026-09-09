@@ -39,6 +39,7 @@ export async function addBookingParticipants(req: Request, res: Response) {
       message: `${participants.length} participants created`,
     });
   } catch (error: any) {
+    console.log(error);
     const message =
       error.code === "23505"
         ? "Duplicate emails found"

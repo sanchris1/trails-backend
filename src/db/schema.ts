@@ -108,6 +108,7 @@ export const expedition = pgTable(
     meetingPoint: text("meeting_point").notNull(),
     guide: text("guide").notNull(),
     guideContact: text("guide_contact").notNull(),
+    featured: boolean("featured").default(false),
     expeditionStatus: expeditionStatusEnum("expedition_status")
       .default("scheduled")
       .notNull(),
@@ -117,21 +118,23 @@ export const expedition = pgTable(
   (table) => [index("expedition_index").on(table.id)],
 );
 
-export const bookings = pgTable("bookings", {
-  id: uuid("bookings_id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .references(() => user.id)
-    .unique(),
-  expeditionId: uuid("expedition_id")
-    .notNull()
-    .references(() => expedition.id, { onDelete: "cascade" }),
-  bookingStatus: bookingStatusEnum("booking_status").default("pending"),
-  numberOfParticipants: integer("number_of_participants").default(1),
-  paymentStatus: paymentStatusEnum("payment_status").default("pending"),
-  totalAmount: integer("total_amount").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  updatedAt: timestamp("updated_at").defaultNow().notNull(),
-});
+export const bookings = pgTable(
+  "bookings",
+  {
+    id: uuid("bookings_id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => user.id),
+    expeditionId: uuid("expedition_id")
+      .notNull()
+      .references(() => expedition.id, { onDelete: "cascade" }),
+    bookingStatus: bookingStatusEnum("booking_status").default("pending"),
+    numberOfParticipants: integer("number_of_participants").default(1),
+    paymentStatus: paymentStatusEnum("payment_status").default("pending"),
+    totalAmount: integer("total_amount").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => [index("booking_id_index").on(table.id)],
+);
 
 export const bookingParticipants = pgTable(
   "booking_participants",
@@ -141,7 +144,7 @@ export const bookingParticipants = pgTable(
       .notNull()
       .references(() => bookings.id, { onDelete: "cascade" }),
     fullName: text("full_name").notNull(),
-    email: text("email").notNull().unique(),
+    email: text("email").notNull(),
     phone: varchar("phone").notNull(),
     medicalNotes: text("medical_notes"),
     emergencyContact: varchar("emergency_contact").notNull(),
