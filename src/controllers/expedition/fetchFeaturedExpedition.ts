@@ -36,8 +36,6 @@ export async function fetchFeaturedExpedition(req: Request, res: Response) {
       adventure: row.adventure,
     };
 
-    console.log(featuredExpedition);
-
     return res.json(featuredExpedition);
   } catch (error) {
     console.log(error);
