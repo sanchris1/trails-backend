@@ -28,7 +28,7 @@ export async function fetchUserBookings(req: Request, res: Response) {
 
     return res.status(200).json({
       success: true,
-      data: userBookings,
+      userBookings,
     });
   } catch (error) {
     console.log(error);
