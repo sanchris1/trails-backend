@@ -5,6 +5,7 @@ import { fetchGalleryImages } from "../controllers/gallery/fetchGalleryImages.js
 import { fetchExpeditionGalleryImages } from "../controllers/gallery/fetchExpeditionGalleryImages.js";
 import { requireRole } from "../middleware/requireRoleMiddleware.js";
 import { checkUser } from "../middleware/checkUserMiddleware.js";
+import { expeditionsWithGalleries } from "../controllers/gallery/expeditionsWithGallery.js";
 
 export const galleryRoute = Router();
 
@@ -22,3 +23,4 @@ galleryRoute.delete(
 );
 galleryRoute.get("/fetch-all", fetchGalleryImages);
 galleryRoute.get("/fetch/:expeditionId", fetchExpeditionGalleryImages);
+galleryRoute.get("/expeditions", expeditionsWithGalleries);

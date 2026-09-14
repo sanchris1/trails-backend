@@ -18,8 +18,7 @@ export async function fetchGalleryImages(req: Request, res: Response) {
       .from(gallery)
       .$dynamic();
 
-    // Filter by expedition when provided
-    if (expeditionId) {
+    if (expeditionId && expeditionId !== "undefined") {
       imagesQuery = imagesQuery.where(eq(gallery.expeditionId, expeditionId));
       countQuery = countQuery.where(eq(gallery.expeditionId, expeditionId));
     }
