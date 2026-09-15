@@ -85,7 +85,7 @@ export async function fetchMerchandise(req: Request, res: Response) {
       });
     }
 
-    return res.status(200).json({ data: products });
+    return res.status(200).json(products);
   } catch (error) {
     console.log(error);
 
