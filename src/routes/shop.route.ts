@@ -4,6 +4,7 @@ import { requireRole } from "../middleware/requireRoleMiddleware.js";
 import { addMerchandise } from "../controllers/shop/addMerchandise.js";
 import { deleteMerchandise } from "../controllers/shop/deleteMerchandise.js";
 import { fetchMerchandise } from "../controllers/shop/fetchMerchandise.js";
+import { fetchMerchandiseDetails } from "../controllers/shop/fetchMerchandiseDetails.js";
 
 export const shopRouter = Router();
 
@@ -15,3 +16,4 @@ shopRouter.delete(
   deleteMerchandise,
 );
 shopRouter.get("/", fetchMerchandise);
+shopRouter.get("/:merchandiseSlug", fetchMerchandiseDetails);
