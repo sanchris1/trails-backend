@@ -51,10 +51,6 @@ export async function addMerchandise(req: Request, res: Response) {
           .filter(Boolean)
       : [];
 
-    console.log("Creating merchandise with title:", title);
-    console.log("Slug:", merchandiseSlug);
-    console.log("Request received at:", new Date().toISOString());
-
     // ---------- Check for existing slug ----------
     const existing = await db
       .select({ id: merchandise.id })
