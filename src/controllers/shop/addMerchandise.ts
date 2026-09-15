@@ -9,69 +9,113 @@ import { eq } from "drizzle-orm";
 
 export async function addMerchandise(req: Request, res: Response) {
   try {
-    const { title, price, description, colors, images, category } =
+    const { title, price, description, colors, images, category, stock, tags } =
       req.body as {
         title: string;
         price: number;
         category: string;
+        stock: number;
         description: string;
-        colors: string;
-        images: {
-          url: string;
-          publicId: string;
-        }[];
+        colors: string[];
+        tags?: string;
+        images: { url: string; publicId: string }[];
       };
 
-    if (
-      !title.trim() ||
-      !price ||
-      !description.trim() ||
-      !category.trim() ||
-      !Array.isArray(images) ||
-      images.length === 0 ||
+    // ---------- Validation ----------
+    const isInvalid =
+      !title?.trim() ||
+      !description?.trim() ||
+      !category?.trim() ||
+      price == null ||
+      price < 0 ||
+      stock == null ||
+      stock < 0 ||
       !Array.isArray(colors) ||
-      colors.length === 0
-    ) {
-      return res.status(401).json({
+      colors.length === 0 ||
+      !Array.isArray(images) ||
+      images.length === 0;
+
+    if (isInvalid) {
+      return res.status(400).json({
         success: false,
-        message: "Please add all the fields",
+        message: "Please fill in all required fields",
       });
     }
 
-    //check if mech with title exists
-    const merchandiseExists = await db
-      .select()
+    const merchandiseSlug = title.trim().toLowerCase().split(" ").join("-");
+    const merchandiseTags = tags?.trim()
+      ? tags
+          .trim()
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
+
+    console.log("Creating merchandise with title:", title);
+    console.log("Slug:", merchandiseSlug);
+    console.log("Request received at:", new Date().toISOString());
+
+    // ---------- Check for existing slug ----------
+    const existing = await db
+      .select({ id: merchandise.id })
       .from(merchandise)
-      .where(eq(merchandise.title, title));
+      .where(eq(merchandise.slug, merchandiseSlug))
+      .limit(1);
 
-    if (merchandiseExists.at(0)) {
-      return res.status(401).json({
+    if (existing.length > 0) {
+      return res.status(409).json({
         success: false,
-        message: "Merchandise with the title already exists",
+        message: "Merchandise with this title already exists",
       });
     }
 
-    const newMerchandise = await db
-      .insert(merchandise)
-      .values({ price, title, description, category })
-      .returning();
+    // ---------- Insert everything in a transaction ----------
+    const result = await db.transaction(async (tx) => {
+      const [newMerchandise] = await tx
+        .insert(merchandise)
+        .values({
+          title: title.trim(),
+          price,
+          description: description.trim(),
+          category: category.trim(),
+          tags: merchandiseTags,
+          slug: merchandiseSlug,
+          stock,
+        })
+        .returning();
 
-    const currentMerchandiseId = newMerchandise[0]?.id;
+      const merchandiseId = newMerchandise.id;
 
-    await db
-      .insert(merchandiseColors)
-      .values({ colors, merchandiseId: currentMerchandiseId });
+      await tx.insert(merchandiseColors).values({
+        colors,
+        merchandiseId,
+      });
 
-    await db
-      .insert(merchandiseImages)
-      .values({ images, merchandiseId: currentMerchandiseId });
+      await tx.insert(merchandiseImages).values({
+        images,
+        merchandiseId,
+      });
 
-    return res.status(200).json({
+      return newMerchandise;
+    });
+
+    return res.status(201).json({
       success: true,
       message: "New merchandise created successfully",
+      data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    console.error("addMerchandise error:", error);
+
+    // Handle unique constraint violation (better than the manual check alone)
+    if (error?.code === "23505") {
+      // Postgres unique_violation
+      return res.status(409).json({
+        success: false,
+        message: "Merchandise with this title already exists",
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message: "Internal server error",

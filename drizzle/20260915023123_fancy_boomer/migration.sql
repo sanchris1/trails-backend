@@ -1,0 +1,1 @@
+ALTER TABLE "merchandise" ADD CONSTRAINT "merchandise_merchandise_slug_key" UNIQUE("merchandise_slug");

@@ -9,7 +9,6 @@ import { imageUploadRoute } from "./imageUpload.route.js";
 import { galleryRoute } from "./gallery.route.js";
 import { favoritesRoute } from "./favorites.route.js";
 import { reviewRoute } from "./review.route.js";
-import { merchandiseRoute } from "./merchandise.route.js";
 import { shopRouter } from "./shop.route.js";
 import { authRoutes } from "./auth.route.js";
 
@@ -23,6 +22,5 @@ apiRouter.use("/image", checkUser, requireRole, imageUploadRoute);
 apiRouter.use("/gallery", galleryRoute);
 apiRouter.use("/favorites", checkUser, favoritesRoute);
 apiRouter.use("/review", reviewRoute);
-apiRouter.use("/merchandise", merchandiseRoute);
 apiRouter.use("/shop", shopRouter);
 apiRouter.use("/auth", authRoutes);

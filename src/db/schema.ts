@@ -34,15 +34,6 @@ export const paymentStatusEnum = pgEnum("payment_status_enum", [
   "refunded",
 ]);
 
-export const merchandiseSizesEnum = pgEnum("merchandise_sizes_enum", [
-  "Small",
-  "Medium",
-  "Large",
-  "XL",
-  "XXL",
-  "Custom",
-]);
-
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -216,6 +207,9 @@ export const merchandise = pgTable(
     category: text("category").notNull(),
     description: text("description").notNull(),
     createdAt: timestamp("created_at").notNull().defaultNow(),
+    tags: text("merchandise_tags").array(),
+    stock: integer("stock").notNull(),
+    slug: text("merchandise_slug").notNull().unique(),
     updatedAt: timestamp("updated_at")
       .notNull()
       .$onUpdate(() => new Date())
