@@ -1,4 +1,4 @@
-import { and, arrayContains, asc, desc, eq, ilike } from "drizzle-orm";
+import { and, arrayContains, asc, desc, eq, ilike, or, sql } from "drizzle-orm";
 import { Response, Request } from "express";
 import {
   merchandise,
@@ -28,14 +28,22 @@ export async function fetchMerchandise(req: Request, res: Response) {
     const conditions: any[] = [];
 
     if (search) {
-      conditions.push(ilike(merchandise.title, `%${search}`));
-      conditions.push(ilike(merchandise.category, `%${search}`));
-      conditions.push(ilike(merchandise.description, `%${search}`));
-      conditions.push(arrayContains(merchandiseColors.colors, [`%${search}`]));
+      conditions.push(
+        or(
+          ilike(merchandise.title, `%${search}%`),
+          ilike(merchandise.category, `%${search}%`),
+          ilike(merchandise.description, `%${search}%`),
+          sql`${merchandise.tags}::text ILIKE ${`%${search}%`}`,
+        ),
+      );
     }
 
     if (color && typeof color === "string") {
       conditions.push(arrayContains(merchandiseColors.colors, [color]));
+    }
+
+    if (category && typeof category === "string") {
+      conditions.push(eq(merchandise.category, category));
     }
 
     let orderBy;
