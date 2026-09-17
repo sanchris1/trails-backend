@@ -5,6 +5,7 @@ import {
   bookingParticipants,
   bookings,
   expedition,
+  user,
 } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
@@ -13,15 +14,20 @@ export async function fetchAllBookings(_req: Request, res: Response) {
     const allBookings = await db
       .select({
         bookingId: bookings.id,
-        title: expedition.expeditionTitle,
+        customerName: user.name,
+        customerEmail: user.email,
+        trailName: adventure.title,
         location: adventure.location,
         departureDate: expedition.departureDate,
         bookingStatus: bookings.bookingStatus,
         paymentStatus: bookings.paymentStatus,
-        totalSlots: adventure.defaultCapacity,
+        totalAmount: bookings.totalAmount,
         numberOfParticipants: bookings.numberOfParticipants,
+        createdAt: bookings.createdAt,
+        totalSlots: adventure.defaultCapacity,
       })
       .from(bookings)
+      .leftJoin(user, eq(bookings.userId, user.id))
       .innerJoin(expedition, eq(bookings.expeditionId, expedition.id))
       .innerJoin(adventure, eq(adventure.id, expedition.adventureId));
 
@@ -41,9 +47,9 @@ export async function fetchAllBookings(_req: Request, res: Response) {
 
         return {
           ...booking,
-          slotsLeft: booking.numberOfParticipants
-            ? booking.totalSlots - booking.numberOfParticipants
-            : 0,
+
+          slotsLeft: booking.totalSlots - (booking.numberOfParticipants ?? 0),
+
           participants,
         };
       }),
