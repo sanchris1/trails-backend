@@ -14,7 +14,7 @@ bookingRoute.post("/participants/:bookingId", addBookingParticipants);
 bookingRoute.put("/cancel/:bookingId", cancelBooking);
 bookingRoute.get("/fetch/:bookingId", fetchBookingDetails);
 bookingRoute.get(
-  "/fetch-all",
+  "/fetch",
 
   requireRole,
   fetchAllBookings,
