@@ -6,10 +6,13 @@ import {
 } from "../../db/schema.js";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "../../index.js";
+import { getAdminId } from "../auth/fetchAdminId.js";
 
 export async function cancelBooking(req: Request, res: Response) {
   try {
     const userId = req.userId!;
+
+    const adminId = await getAdminId();
 
     const { bookingId } = req.params as {
       bookingId: string;
@@ -95,10 +98,11 @@ export async function cancelBooking(req: Request, res: Response) {
     }
 
     await db.insert(notification).values({
-      userId,
+      recipientId: adminId,
+      senderId: userId,
       title: "Cancelled Booking(s)",
       message,
-      type: "cancelled_bo0king",
+      type: "booking_cancelled",
     });
 
     return res.status(200).json({
