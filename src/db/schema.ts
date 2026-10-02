@@ -34,6 +34,21 @@ export const paymentStatusEnum = pgEnum("payment_status_enum", [
   "refunded",
 ]);
 
+export const notificationTypeEnum = pgEnum("notification_type", [
+  "inquiry",
+  "booking_created",
+  "booking_confirmed",
+  "booking_cancelled",
+  "payment_pending",
+  "payment_received",
+  "payment_failed",
+  "payment_reminder",
+  "expedition_reminder",
+  "expedition_updated",
+  "expedition_cancelled",
+  "system",
+]);
+
 export const user = pgTable("user", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
@@ -143,17 +158,37 @@ export const bookingParticipants = pgTable(
   (table) => [index("booking_participants_booking_idx").on(table.bookingId)],
 );
 
-export const notification = pgTable("notifications", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  userId: uuid("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  message: text("message").notNull(),
-  type: text("notification_type").notNull(),
-  isRead: boolean("is_read").notNull().default(false),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const notification = pgTable(
+  "notification",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    recipientId: uuid("recipient_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    senderId: uuid("sender_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    type: notificationTypeEnum("type").notNull(),
+    title: text("title").notNull(),
+    message: text("message").notNull(),
+    bookingId: uuid("booking_id").references(() => bookings.id, {
+      onDelete: "cascade",
+    }),
+    expeditionId: uuid("expedition_id").references(() => expedition.id, {
+      onDelete: "cascade",
+    }),
+    isRead: boolean("is_read").default(false).notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    readAt: timestamp("read_at"),
+  },
+  (table) => [
+    index("notification_recipient_idx").on(table.recipientId),
+    index("notification_sender_idx").on(table.senderId),
+    index("notification_booking_idx").on(table.bookingId),
+    index("notification_expedition_idx").on(table.expeditionId),
+    index("notification_created_at_idx").on(table.createdAt),
+  ],
+);
 
 export const gallery = pgTable("gallery", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -256,3 +291,14 @@ export const favoriteMerchandise = pgTable(
   },
   (table) => [index("favorite_merchandise_index").on(table.id)],
 );
+
+export const mpesaReceipt = pgTable("mpesa_receipt", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  bookingId: uuid("booking_id")
+    .notNull()
+    .references(() => bookings.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => user.id),
+  receiptNumber: text("receipt_number").notNull(),
+});

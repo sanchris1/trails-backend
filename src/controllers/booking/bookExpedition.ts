@@ -2,124 +2,159 @@ import { Request, Response } from "express";
 import { db } from "../../index.js";
 import {
   adventure,
+  bookingParticipants,
   bookings,
   expedition,
   notification,
   user,
 } from "../../db/schema.js";
-import { and, eq, sql } from "drizzle-orm";
+import { getAdminId } from "../auth/fetchAdminId.js";
+import { and, eq, ne, sum } from "drizzle-orm";
+
+interface BookingData {
+  expeditionId: string;
+  bookingStatus: "pending" | "cancelled" | "confirmed";
+  numberOfParticipants: number;
+  paymentStatus: "pending" | "partially_paid" | "paid" | "failed" | "refunded";
+  totalAmount: number;
+}
+
+interface BookParticipantsData {
+  fullName: string;
+  email: string;
+  phone: string;
+  medicalNotes: string;
+  emergencyContact: string;
+}
+
+interface BookExpeditionsRequestData {
+  bookings: BookingData;
+  bookingParticipants: BookParticipantsData[];
+}
 
 export async function bookExpedition(req: Request, res: Response) {
   try {
     const userId = req.userId;
-    const { expeditionId } = req.params as { expeditionId: string };
-    const { numberOfParticipants } = req.body;
+    const adminId = await getAdminId();
+
+    if (adminId === "") {
+      return res
+        .status(400)
+        .json({ success: false, message: "Admin Id not found" });
+    }
+
+    const data = req.body as BookExpeditionsRequestData;
 
     if (!userId) {
-      return res.status(404).json({
-        success: false,
-        message: "User Id needed",
-      });
+      return res
+        .status(400)
+        .json({ success: false, message: "Authenticate!!" });
     }
 
-    const isUser = await db
-      .select()
-      .from(user)
-      .where(eq(user.id, userId))
-      .limit(1);
-
-    if (isUser.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    const existingBooking = await db
-      .select()
-      .from(bookings)
-      .where(
-        and(
-          eq(bookings.userId, userId),
-          eq(bookings.expeditionId, expeditionId),
-        ),
-      );
-
-    if (existingBooking.length > 0) {
-      if (existingBooking[0].bookingStatus !== "cancelled") {
-        return res.status(409).json({
-          success: false,
-          message: "You already have an active booking for this expedition",
-        });
-      } else {
-        await db
-          .delete(bookings)
-          .where(
-            and(
-              eq(bookings.userId, userId),
-              eq(bookings.expeditionId, expeditionId),
-            ),
-          );
-      }
-    }
-
-    const expeditionDetails = await db
-      .select()
-      .from(expedition)
-      .where(eq(expedition.id, expeditionId))
-      .innerJoin(adventure, eq(adventure.id, expedition.adventureId))
-      .limit(1);
-
-    if (!expeditionDetails || expeditionDetails.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: "Expedition not found",
-      });
-    }
-
-    const numP = numberOfParticipants ?? 1;
-    const price = expeditionDetails.at(0)?.adventure.defaultPrice!;
-
-    const [{ booked }] = await db
-      .select({
-        booked: sql<number>`COALESCE(SUM(${bookings.numberOfParticipants}),0)`,
-      })
-      .from(bookings)
-      .where(eq(bookings.expeditionId, expeditionId));
-
-    const slotsLeft = expeditionDetails[0].adventure.defaultCapacity - booked;
-
-    if (numP > slotsLeft) {
+    if (!data.bookings) {
       return res.status(400).json({
         success: false,
-        message: `Only ${slotsLeft} slot(s) are available`,
+        message: "Please provide all the booking data",
       });
     }
 
-    //creating the new booking
-    const newBooking = await db
-      .insert(bookings)
-      .values({
-        userId,
-        expeditionId,
-        numberOfParticipants: numP,
-        totalAmount: price * numP,
-      })
-      .returning();
+    if (
+      !data.bookingParticipants ||
+      data.bookingParticipants.length === 0 ||
+      !Array.isArray(data.bookingParticipants)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please pass the participants. Should be more than one",
+      });
+    }
 
-    await db.insert(notification).values({
-      userId,
-      title: "New booking created",
-      message: `User of name:${isUser.at(0)?.name}
-       and email:${isUser.at(0)?.email} has created a booking with 
-       ${numP} participants.`,
-      type: "bookings-created",
+    const result = await db.transaction(async (tx) => {
+      const [newBooking] = await tx
+        .insert(bookings)
+        .values({
+          userId,
+          expeditionId: data.bookings.expeditionId,
+          bookingStatus: data.bookings.bookingStatus,
+          numberOfParticipants: data.bookings.numberOfParticipants,
+          paymentStatus: data.bookings.paymentStatus,
+          totalAmount: data.bookings.totalAmount,
+        })
+        .returning({ bookingId: bookings.id });
+
+      const [userName] = await tx
+        .select({ name: user.name })
+        .from(user)
+        .where(eq(user.id, userId))
+        .limit(1);
+
+      await tx.insert(notification).values({
+        recipientId: adminId,
+        senderId: userId,
+        type: "booking_created",
+        title: "Booking created.",
+        message: `${userName.name.toUpperCase()} has created a new booking with ${data.bookingParticipants.length} booked participants .`,
+      });
+
+      //check if the remaining slots are the same with the participants
+
+      const [expeditionWithAdventure] = await tx
+        .select({ maximumCapacity: adventure.defaultCapacity })
+        .from(expedition)
+        .innerJoin(adventure, eq(expedition.adventureId, adventure.id))
+        .where(eq(expedition.id, data.bookings.expeditionId))
+        .limit(1);
+
+      if (!expeditionWithAdventure) {
+        tx.rollback();
+        return res.status(404).json({
+          success: false,
+          message: "Expedition or adventure not found",
+        });
+      }
+
+      const [bookedData] = await tx
+        .select({ totalBooked: sum(bookings.numberOfParticipants) })
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.expeditionId, data.bookings.expeditionId),
+            ne(bookings.bookingStatus, "cancelled"),
+          ),
+        );
+
+      const currentBookedCount = Number(bookedData?.totalBooked || 0);
+      const slotsLeft =
+        expeditionWithAdventure.maximumCapacity - currentBookedCount;
+
+      if (slotsLeft < data.bookingParticipants.length) {
+        tx.rollback();
+        return res.status(400).json({
+          success: false,
+          message: `For the expedition only ${slotsLeft} slots are left.`,
+        });
+      }
+
+      const participantsToInsert = data.bookingParticipants.map(
+        (participant) => ({
+          bookingId: newBooking.bookingId,
+          fullName: participant.fullName,
+          email: participant.email,
+          phone: participant.phone,
+          medicalNotes: participant.medicalNotes,
+          emergencyContact: participant.emergencyContact,
+        }),
+      );
+
+      await tx.insert(bookingParticipants).values(participantsToInsert);
+
+      return newBooking;
     });
 
     return res.status(201).json({
       success: true,
       message: "Booking created successfully",
-      data: newBooking,
+      result,
     });
   } catch (error) {
     console.log(error);
