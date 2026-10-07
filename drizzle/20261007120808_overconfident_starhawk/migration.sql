@@ -1,0 +1,2 @@
+ALTER TABLE "mpesa_receipt" DROP CONSTRAINT "mpesa_receipt_user_id_user_id_fkey", ADD CONSTRAINT "mpesa_receipt_user_id_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "user"("id") ON DELETE CASCADE;--> statement-breakpoint
+ALTER TABLE "notification" DROP CONSTRAINT "notification_sender_id_user_id_fkey", ADD CONSTRAINT "notification_sender_id_user_id_fkey" FOREIGN KEY ("sender_id") REFERENCES "user"("id") ON DELETE CASCADE;

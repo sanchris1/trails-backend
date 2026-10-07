@@ -128,7 +128,7 @@ export const bookings = pgTable(
   "bookings",
   {
     id: uuid("bookings_id").primaryKey().defaultRandom(),
-    userId: uuid("user_id").references(() => user.id),
+    userId: uuid("user_id").references(() => user.id, { onDelete: "cascade" }),
     expeditionId: uuid("expedition_id")
       .notNull()
       .references(() => expedition.id, { onDelete: "cascade" }),
@@ -166,7 +166,7 @@ export const notification = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     senderId: uuid("sender_id").references(() => user.id, {
-      onDelete: "set null",
+      onDelete: "cascade",
     }),
     type: notificationTypeEnum("type").notNull(),
     title: text("title").notNull(),
@@ -299,6 +299,6 @@ export const mpesaReceipt = pgTable("mpesa_receipt", {
     .references(() => bookings.id),
   userId: uuid("user_id")
     .notNull()
-    .references(() => user.id),
+    .references(() => user.id, { onDelete: "cascade" }),
   receiptNumber: text("receipt_number").notNull(),
 });

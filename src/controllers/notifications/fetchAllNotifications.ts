@@ -3,7 +3,7 @@ import { db } from "../../index.js";
 import { notification } from "../../db/schema.js";
 import { desc } from "drizzle-orm";
 
-export async function fetchAllNotifications(req: Request, res: Response) {
+export async function fetchAllNotifications(_req: Request, res: Response) {
   try {
     const result = await db
       .select()

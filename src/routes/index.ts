@@ -11,6 +11,7 @@ import { favoritesRoute } from "./favorites.route.js";
 import { reviewRoute } from "./review.route.js";
 import { shopRouter } from "./shop.route.js";
 import { authRoutes } from "./auth.route.js";
+import { notificationsRoute } from "./notifications.routes.js";
 
 export const apiRouter = Router();
 
@@ -24,3 +25,4 @@ apiRouter.use("/favorites", checkUser, favoritesRoute);
 apiRouter.use("/review", reviewRoute);
 apiRouter.use("/shop", shopRouter);
 apiRouter.use("/auth", authRoutes);
+apiRouter.use("/notifications", checkUser, notificationsRoute);
