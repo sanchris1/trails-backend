@@ -115,7 +115,7 @@ export async function fetchAdminDashboardStats(_req: Request, res: Response) {
         .where(
           and(
             eq(notification.recipientId, adminId),
-            eq(notification.isRead, true),
+            eq(notification.isRead, false),
           ),
         )
         .limit(5)
