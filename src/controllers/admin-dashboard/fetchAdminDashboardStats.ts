@@ -1,11 +1,17 @@
 import { Request, Response } from "express";
 import { db } from "../../index.js";
-import { sql } from "drizzle-orm";
-import { bookings } from "../../db/schema.js";
+import { and, desc, eq, or, sql } from "drizzle-orm";
+import {
+  adventure,
+  bookings,
+  expedition,
+  notification,
+} from "../../db/schema.js";
 import { checkValueSign } from "../../helpers/valueSign.js";
 import { calculatePercentageHelper } from "../../helpers/calculatePercentage.js";
+import { getAdminId } from "../auth/fetchAdminId.js";
 
-export async function fetchAdminDashboardStats(req: Request, res: Response) {
+export async function fetchAdminDashboardStats(_req: Request, res: Response) {
   try {
     const stats = await db.transaction(async (tx) => {
       const today = new Date();
@@ -21,6 +27,8 @@ export async function fetchAdminDashboardStats(req: Request, res: Response) {
         today.getMonth() - 1,
         1,
       );
+
+      const adminId = await getAdminId();
 
       const [metrics] = await tx
         .select({
@@ -66,6 +74,53 @@ export async function fetchAdminDashboardStats(req: Request, res: Response) {
       const revenueDifference = metrics.currentRevenue - metrics.lastRevenue;
       const bookingsDifference = metrics.currentBookings - metrics.lastBookings;
 
+      const expeditions = await tx
+        .select({
+          id: expedition.id,
+          title: expedition.expeditionTitle,
+          location: adventure.location,
+          departureDate: expedition.departureDate,
+          totalSlots: adventure.defaultCapacity,
+          bookedSlots: sql<number>`COALESCE(SUM(${bookings.numberOfParticipants}),0)`,
+        })
+        .from(expedition)
+        .leftJoin(adventure, eq(adventure.id, expedition.adventureId))
+        .innerJoin(bookings, eq(bookings.expeditionId, expedition.id))
+        .where(
+          or(
+            eq(expedition.expeditionStatus, "scheduled"),
+            eq(expedition.expeditionStatus, "ongoing"),
+          ),
+        )
+        .limit(3)
+        .groupBy(
+          expedition.id,
+          adventure.id,
+          expedition.expeditionTitle,
+          adventure.location,
+          expedition.departureDate,
+          adventure.defaultCapacity,
+        )
+        .orderBy(desc(expedition.departureDate));
+
+      const notifications = await tx
+        .select({
+          id: notification.id,
+          type: notification.type,
+          title: notification.title,
+          message: notification.message,
+          createdAt: notification.createdAt,
+        })
+        .from(notification)
+        .where(
+          and(
+            eq(notification.recipientId, adminId),
+            eq(notification.isRead, true),
+          ),
+        )
+        .limit(5)
+        .orderBy(desc(notification.createdAt));
+
       return {
         revenue: {
           total: metrics.currentRevenue,
@@ -91,6 +146,8 @@ export async function fetchAdminDashboardStats(req: Request, res: Response) {
           ).toFixed(1),
           signage: checkValueSign(participantsDifference),
         },
+        expeditions,
+        notifications,
       };
     });
 
