@@ -18,6 +18,7 @@ export async function getSession(req: Request, res: Response) {
         name: user.name,
         email: user.email,
         role: user.role,
+        createdAt: user.createdAt,
       })
       .from(user)
       .where(eq(user.id, req.userId))

@@ -13,6 +13,7 @@ import { shopRouter } from "./shop.route.js";
 import { authRoutes } from "./auth.route.js";
 import { notificationsRoute } from "./notifications.routes.js";
 import { adminDashboardRoute } from "./admin.dashboard.route.js";
+import { favoriteMerchandiseRoutes } from "./favoriteMerchandise.routes.js";
 
 export const apiRouter = Router();
 
@@ -23,6 +24,7 @@ apiRouter.use("/booking", checkUser, bookingRoute);
 apiRouter.use("/image", checkUser, requireRole, imageUploadRoute);
 apiRouter.use("/gallery", galleryRoute);
 apiRouter.use("/favorites", checkUser, favoritesRoute);
+apiRouter.use("/merchandise", checkUser, favoriteMerchandiseRoutes);
 apiRouter.use("/review", reviewRoute);
 apiRouter.use("/shop", shopRouter);
 apiRouter.use("/auth", authRoutes);
