@@ -1,23 +1,23 @@
 import { Request, Response } from "express";
 import { db } from "../../index.js";
-import { adventure, favorites } from "../../db/schema.js";
+import { expedition, favorites } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 
 export async function toggleFavorites(req: Request, res: Response) {
   try {
     const userId = req.userId!;
-    const { adventureId } = req.params as { adventureId: string };
+    const { id } = req.params as { id: string };
 
-    const adventureExists = await db
+    const expeditionExists = await db
       .select()
-      .from(adventure)
-      .where(eq(adventure.id, adventureId))
+      .from(expedition)
+      .where(eq(expedition.id, id))
       .limit(1);
 
-    if (adventureExists.length === 0) {
+    if (expeditionExists.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "Adventure does not exists",
+        message: "Expedition does not exists",
       });
     }
 
@@ -27,32 +27,24 @@ export async function toggleFavorites(req: Request, res: Response) {
     const existingFavorite = await db
       .select()
       .from(favorites)
-      .where(
-        and(
-          eq(favorites.userId, userId),
-          eq(favorites.adventureId, adventureId),
-        ),
-      );
+      .where(and(eq(favorites.userId, userId), eq(favorites.expeditionId, id)));
 
     if (existingFavorite.length > 0) {
       await db
         .delete(favorites)
         .where(
-          and(
-            eq(favorites.userId, userId),
-            eq(favorites.adventureId, adventureId),
-          ),
+          and(eq(favorites.userId, userId), eq(favorites.expeditionId, id)),
         );
 
       isFavorite = false;
-      message = "Adventure removed from the favorites";
+      message = "Expedition removed from the favorites";
     } else {
       await db.insert(favorites).values({
         userId,
-        adventureId,
+        expeditionId: id,
       });
       isFavorite = true;
-      message = "Adventure added to the favorites";
+      message = "Expedition added to the favorites";
     }
 
     return res.status(200).json({

@@ -1,5 +1,5 @@
 import { Response, Request } from "express";
-import { adventure, favorites } from "../../db/schema.js";
+import { adventure, expedition, favorites } from "../../db/schema.js";
 import { db } from "../../index.js";
 import { eq } from "drizzle-orm";
 
@@ -8,14 +8,23 @@ export const fetchUserFavorites = async (req: Request, res: Response) => {
     const userId = req.userId!;
 
     const allUserFavorites = await db
-      .select()
+      .select({
+        expeditionId: expedition.id,
+        image: adventure.coverImage,
+        status: expedition.expeditionStatus,
+        title: expedition.expeditionTitle,
+        location: adventure.location,
+        departureDate: expedition.departureDate,
+        difficulty: adventure.difficulty,
+      })
       .from(favorites)
       .where(eq(favorites.userId, userId))
-      .innerJoin(adventure, eq(adventure.id, favorites.adventureId));
+      .innerJoin(expedition, eq(expedition.id, favorites.expeditionId))
+      .innerJoin(adventure, eq(adventure.id, expedition.adventureId));
 
     return res.status(200).json({
       success: true,
-      data: allUserFavorites.length > 0 ? allUserFavorites : [],
+      allUserFavorites,
     });
   } catch (error) {
     const message =

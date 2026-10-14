@@ -1,6 +1,6 @@
 import { Response, Request } from "express";
 import { db } from "../../index.js";
-import { adventure, favorites } from "../../db/schema.js";
+import { expedition, favorites } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
 export const fetchFavorites = async (req: Request, res: Response) => {
@@ -8,7 +8,7 @@ export const fetchFavorites = async (req: Request, res: Response) => {
     const allFavorites = await db
       .select()
       .from(favorites)
-      .innerJoin(adventure, eq(adventure.id, favorites.adventureId));
+      .innerJoin(expedition, eq(expedition.id, favorites.expeditionId));
 
     return res.status(200).json({
       success: true,

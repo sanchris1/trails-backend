@@ -7,7 +7,8 @@ import { fetchExpeditionReviews } from "../controllers/reviews/fetchExpeditionRe
 
 export const reviewRoute = Router();
 
-reviewRoute.post("/add/:expeditionId", checkUser, addReview);
+reviewRoute.post("/add", checkUser, addReview);
 reviewRoute.get("/fetch/:expeditionId", fetchExpeditionReviews);
+reviewRoute.get("/fetch/:merchandiseId", fetchExpeditionReviews);
 reviewRoute.put("/update/:expeditionId", checkUser, updateReview);
 reviewRoute.delete("/delete/:expeditionId", checkUser, deleteReviews);

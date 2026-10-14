@@ -206,9 +206,9 @@ export const favorites = pgTable("favorites", {
   userId: uuid("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
-  adventureId: uuid("adventure_id")
+  expeditionId: uuid("expedition_id")
     .notNull()
-    .references(() => adventure.id, { onDelete: "cascade" }),
+    .references(() => expedition.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -219,9 +219,13 @@ export const reviews = pgTable(
     userId: uuid("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    expeditionId: uuid("expedition_id")
-      .notNull()
-      .references(() => expedition.id, { onDelete: "cascade" }),
+    expeditionId: uuid("expedition_id").references(() => expedition.id, {
+      onDelete: "cascade",
+    }),
+    merchandiseId: uuid("merchandise_id").references(() => merchandise.id, {
+      onDelete: "cascade",
+    }),
+    approved: boolean("approved").notNull().default(false),
     rating: integer("rating").notNull().default(1),
     comment: text("comment").default(""),
     createdAt: timestamp("created_at").notNull().defaultNow(),

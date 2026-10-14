@@ -6,6 +6,6 @@ import { fetchUserFavorites } from "../controllers/favorites/fetchUserFavorites.
 
 export const favoritesRoute = Router();
 
-favoritesRoute.put("/toggle/:adventureId", toggleFavorites);
+favoritesRoute.put("/toggle/:id", toggleFavorites);
 favoritesRoute.get("/fetch-user", fetchUserFavorites);
 favoritesRoute.get("/fetch", requireRole, fetchFavorites);

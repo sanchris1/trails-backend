@@ -1,0 +1,2 @@
+ALTER TABLE "favorites" DROP CONSTRAINT "favorites_adventure_id_adventure_id_fkey";--> statement-breakpoint
+ALTER TABLE "favorites" ADD CONSTRAINT "favorites_adventure_id_expedition_expedition_id_fkey" FOREIGN KEY ("adventure_id") REFERENCES "expedition"("expedition_id") ON DELETE CASCADE;
