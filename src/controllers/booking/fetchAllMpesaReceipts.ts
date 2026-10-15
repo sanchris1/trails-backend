@@ -14,7 +14,7 @@ export async function fetchAllMpesaReceipts(req: Request, res: Response) {
           userEmail: user.email,
           title: expedition.expeditionTitle,
           amount: bookings.totalAmount,
-          status: bookings.bookingStatus,
+          status: bookings.paymentStatus,
           receiptNumber: mpesaReceipt.receiptNumber,
           paymentDate: mpesaReceipt.createdAt,
           bookingId: bookings.id,
@@ -31,7 +31,7 @@ export async function fetchAllMpesaReceipts(req: Request, res: Response) {
       COALESCE(
         SUM(${bookings.totalAmount})
         FILTER (
-          WHERE ${bookings.paymentStatus} IN ('paid', 'partially_paid')
+          WHERE ${bookings.paymentStatus} IN ('paid', 'partially_paid') 
         ),
         0
       )
