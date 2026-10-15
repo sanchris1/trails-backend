@@ -7,7 +7,7 @@ import {
   expedition,
   user,
 } from "../../db/schema.js";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 export async function fetchAllBookings(_req: Request, res: Response) {
   try {
@@ -29,7 +29,13 @@ export async function fetchAllBookings(_req: Request, res: Response) {
       .from(bookings)
       .leftJoin(user, eq(bookings.userId, user.id))
       .innerJoin(expedition, eq(bookings.expeditionId, expedition.id))
-      .innerJoin(adventure, eq(adventure.id, expedition.adventureId));
+      .innerJoin(adventure, eq(adventure.id, expedition.adventureId))
+      .where(
+        or(
+          eq(expedition.expeditionStatus, "scheduled"),
+          eq(expedition.expeditionStatus, "ongoing"),
+        ),
+      );
 
     if (allBookings.length === 0) {
       return res.status(404).json({
