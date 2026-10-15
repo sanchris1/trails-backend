@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { eq } from "drizzle-orm";
+import { eq, count, desc } from "drizzle-orm";
 import { db } from "../../index.js";
 import {
   adventure,
@@ -15,7 +15,6 @@ export const fetchAllUserFavorites = async (req: Request, res: Response) => {
     const [favoriteTrails, favoriteProducts] = await Promise.all([
       db
         .select({
-          favoriteId: favorites.id,
           id: expedition.id,
           title: adventure.title,
           image: adventure.coverImage,
@@ -24,20 +23,23 @@ export const fetchAllUserFavorites = async (req: Request, res: Response) => {
           duration: adventure.duration,
           difficulty: adventure.difficulty,
           status: expedition.expeditionStatus,
+          likesCount: count(favorites.id),
           savedAt: favorites.createdAt,
         })
         .from(favorites)
         .innerJoin(expedition, eq(favorites.expeditionId, expedition.id))
-        .innerJoin(adventure, eq(expedition.adventureId, adventure.id)),
+        .innerJoin(adventure, eq(expedition.adventureId, adventure.id))
+        .groupBy(expedition.id, adventure.id, favorites.createdAt),
+
       db
         .select({
-          favoriteId: favoriteMerchandise.id,
           id: merchandise.id,
           title: merchandise.title,
           image: merchandiseImages.images,
           category: merchandise.category,
           price: merchandise.price,
           stock: merchandise.stock,
+          likesCount: count(favoriteMerchandise.id),
           savedAt: favoriteMerchandise.createdAt,
         })
         .from(favoriteMerchandise)
@@ -48,6 +50,11 @@ export const fetchAllUserFavorites = async (req: Request, res: Response) => {
         .leftJoin(
           merchandiseImages,
           eq(merchandiseImages.merchandiseId, merchandise.id),
+        )
+        .groupBy(
+          merchandise.id,
+          merchandiseImages.id,
+          favoriteMerchandise.createdAt,
         ),
     ]);
 
@@ -56,13 +63,14 @@ export const fetchAllUserFavorites = async (req: Request, res: Response) => {
         ...item,
         type: "expedition" as const,
         href: `/trails/${item.id}`,
-        image: item.image,
+        savedAt: item.savedAt,
       })),
       ...favoriteProducts.map((item) => ({
         ...item,
         type: "merchandise" as const,
         href: `/shop/${item.id}`,
         image: item.image?.[0]?.url ?? null,
+        savedAt: item.savedAt,
       })),
     ].sort(
       (a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime(),
