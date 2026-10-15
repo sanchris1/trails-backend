@@ -1,0 +1,1 @@
+ALTER TABLE "mpesa_receipt" ADD COLUMN "created_at" timestamp DEFAULT now();

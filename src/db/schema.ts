@@ -298,6 +298,7 @@ export const favoriteMerchandise = pgTable(
 
 export const mpesaReceipt = pgTable("mpesa_receipt", {
   id: uuid("id").primaryKey().defaultRandom(),
+  paymentId: text("payment_id"),
   bookingId: uuid("booking_id")
     .notNull()
     .references(() => bookings.id),
@@ -305,4 +306,5 @@ export const mpesaReceipt = pgTable("mpesa_receipt", {
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
   receiptNumber: text("receipt_number").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
 });

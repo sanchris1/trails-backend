@@ -1,0 +1,1 @@
+ALTER TABLE "mpesa_receipt" ADD COLUMN "payment_id" text NOT NULL;

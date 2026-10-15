@@ -3,12 +3,15 @@ import { db } from "../../index.js";
 import { bookings, mpesaReceipt, notification } from "../../db/schema.js";
 import { and, eq } from "drizzle-orm";
 import { getAdminId } from "../auth/fetchAdminId.js";
+import { generateRandomPaymentId } from "../../utils/randomId.js";
 
 export async function fetchUserMpesaReceiptNumber(req: Request, res: Response) {
   try {
     const userId = req.userId;
 
     const adminId = await getAdminId();
+
+    const paymentId = generateRandomPaymentId(6);
 
     if (adminId === "") {
       return res
@@ -47,7 +50,12 @@ export async function fetchUserMpesaReceiptNumber(req: Request, res: Response) {
     await db.transaction(async (tx) => {
       await tx
         .insert(mpesaReceipt)
-        .values({ userId, bookingId, receiptNumber });
+        .values({
+          userId,
+          bookingId,
+          receiptNumber,
+          paymentId: `PAY-${paymentId}`,
+        });
 
       await tx.insert(notification).values({
         recipientId: adminId,
@@ -59,13 +67,11 @@ export async function fetchUserMpesaReceiptNumber(req: Request, res: Response) {
       });
     });
 
-    return res
-      .status(200)
-      .json({
-        success: true,
-        message:
-          "Receipt sent successfully. Wait for the confirmation by the admins",
-      });
+    return res.status(200).json({
+      success: true,
+      message:
+        "Receipt sent successfully. Wait for the confirmation by the admins",
+    });
   } catch (error) {
     console.error("Error fetching the user receipt data");
 

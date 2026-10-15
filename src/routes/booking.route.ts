@@ -6,6 +6,8 @@ import { fetchAllBookings } from "../controllers/booking/fetchAllBookings.js";
 import { fetchUserBookings } from "../controllers/booking/fetchUserBookings.js";
 import { fetchBookingDetails } from "../controllers/booking/fetchBookingDetails.js";
 import { fetchUserMpesaReceiptNumber } from "../controllers/booking/fetchMpesaReceiptInformation.js";
+import { fetchAllMpesaReceipts } from "../controllers/booking/fetchAllMpesaReceipts.js";
+import { updateBookingStatus } from "../controllers/booking/updateBookingStatus.js";
 
 export const bookingRoute = Router();
 
@@ -20,3 +22,5 @@ bookingRoute.get(
 );
 bookingRoute.get("/fetch", fetchUserBookings);
 bookingRoute.post("/receipt", fetchUserMpesaReceiptNumber);
+bookingRoute.get("/fetch-all", requireRole, fetchAllMpesaReceipts);
+bookingRoute.put("/update-status/:bookingId", requireRole, updateBookingStatus);

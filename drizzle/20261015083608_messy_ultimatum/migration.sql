@@ -1,0 +1,1 @@
+ALTER TABLE "mpesa_receipt" ALTER COLUMN "payment_id" DROP NOT NULL;
