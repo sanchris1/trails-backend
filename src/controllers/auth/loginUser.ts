@@ -9,7 +9,6 @@ import {
   generateRawRefreshToken,
   hashToken,
 } from "../../helpers/authUtils.js";
-import { env } from "../../config/env.js";
 
 export async function loginUser(req: Request, res: Response) {
   try {
@@ -62,6 +61,11 @@ export async function loginUser(req: Request, res: Response) {
 
     const expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 7);
+
+    await db
+      .update(user)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(user.id, existingUser.id));
 
     await db.insert(refreshTokens).values({
       userId: existingUser.id,

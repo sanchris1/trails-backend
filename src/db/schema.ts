@@ -57,6 +57,7 @@ export const user = pgTable("user", {
   role: UserRole("role").default("user"),
   verified: boolean("verified").default(false),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
   updatedAt: timestamp("updated_at")
     .notNull()
     .$onUpdate(() => new Date())

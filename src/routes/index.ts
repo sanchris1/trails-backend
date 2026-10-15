@@ -14,6 +14,7 @@ import { authRoutes } from "./auth.route.js";
 import { notificationsRoute } from "./notifications.routes.js";
 import { adminDashboardRoute } from "./admin.dashboard.route.js";
 import { favoriteMerchandiseRoutes } from "./favoriteMerchandise.routes.js";
+import { usersRoutes } from "./users.routes.js";
 
 export const apiRouter = Router();
 
@@ -30,3 +31,4 @@ apiRouter.use("/shop", shopRouter);
 apiRouter.use("/auth", authRoutes);
 apiRouter.use("/notifications", checkUser, notificationsRoute);
 apiRouter.use("/admin", adminDashboardRoute);
+apiRouter.use("/users", checkUser, usersRoutes);
