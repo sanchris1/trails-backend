@@ -20,7 +20,7 @@ bookingRoute.get(
   requireRole,
   fetchAllBookings,
 );
-bookingRoute.get("/fetch", fetchUserBookings);
+bookingRoute.get("/fetch-user", fetchUserBookings);
 bookingRoute.post("/receipt", fetchUserMpesaReceiptNumber);
 bookingRoute.get("/fetch-all", requireRole, fetchAllMpesaReceipts);
 bookingRoute.put("/update-status/:bookingId", requireRole, updateBookingStatus);

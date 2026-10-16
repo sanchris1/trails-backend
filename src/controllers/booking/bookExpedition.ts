@@ -70,6 +70,26 @@ export async function bookExpedition(req: Request, res: Response) {
     }
 
     const result = await db.transaction(async (tx) => {
+      const [existingBooking] = await tx
+        .select()
+        .from(bookings)
+        .where(
+          and(
+            eq(bookings.expeditionId, data.bookings.expeditionId),
+            eq(bookings.userId, userId),
+          ),
+        )
+        .limit(1);
+
+      if (existingBooking) {
+        return res
+          .status(409)
+          .json({
+            success: false,
+            message: "You have already booked this expedition.",
+          });
+      }
+
       const [newBooking] = await tx
         .insert(bookings)
         .values({
