@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "../../index.js";
-import { bookings } from "../../db/schema.js";
+import { adventure, bookings, expedition } from "../../db/schema.js";
 import { eq } from "drizzle-orm";
 
 export async function fetchUserBookings(req: Request, res: Response) {
@@ -15,9 +15,23 @@ export async function fetchUserBookings(req: Request, res: Response) {
     }
 
     const userBookings = await db
-      .select()
+      .select({
+        expeditionId: expedition.id,
+        location: adventure.location,
+        paymentStatus: bookings.paymentStatus,
+        departureDate: expedition.departureDate,
+        returnDate: expedition.returnDate,
+        bookingStatus: bookings.bookingStatus,
+        numberOfParticipants: bookings.numberOfParticipants,
+        bookingId: bookings.id,
+        amountPaid: bookings.amountPaid,
+        totalAmount: bookings.totalAmount,
+        expeditionTitle: expedition.expeditionTitle,
+      })
       .from(bookings)
-      .where(eq(bookings.userId, userId));
+      .where(eq(bookings.userId, userId))
+      .leftJoin(expedition, eq(bookings.expeditionId, expedition.id))
+      .leftJoin(adventure, eq(expedition.adventureId, adventure.id));
 
     if (userBookings.length === 0) {
       return res.status(404).json({

@@ -24,6 +24,10 @@ export async function updateBookingStatus(req: Request, res: Response) {
       status: StatusTypes;
     };
 
+    const { amountPaid } = req.query as {
+      amountPaid: string;
+    };
+
     const { bookingId } = req.params as { bookingId: string };
 
     if (
@@ -37,7 +41,10 @@ export async function updateBookingStatus(req: Request, res: Response) {
 
     await db.transaction(async (tx) => {
       const [bookingExists] = await tx
-        .select({ expeditionId: bookings.expeditionId })
+        .select({
+          expeditionId: bookings.expeditionId,
+          totalAMount: bookings.totalAmount,
+        })
         .from(bookings)
         .where(eq(bookings.id, bookingId))
         .limit(1);
@@ -57,7 +64,9 @@ export async function updateBookingStatus(req: Request, res: Response) {
               : status === "refunded"
                 ? "cancelled"
                 : "pending",
-          paymentStatus: status,
+          amountPaid: status === "partially_paid" ? Number(amountPaid) : 0,
+          paymentStatus:
+            Number(amountPaid) === bookingExists.totalAMount ? "paid" : status,
         })
         .where(
           and(

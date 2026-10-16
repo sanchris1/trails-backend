@@ -18,6 +18,7 @@ export async function fetchAllMpesaReceipts(req: Request, res: Response) {
           receiptNumber: mpesaReceipt.receiptNumber,
           paymentDate: mpesaReceipt.createdAt,
           bookingId: bookings.id,
+          amountPaid: bookings.amountPaid,
         })
         .from(mpesaReceipt)
         .innerJoin(user, eq(user.id, mpesaReceipt.userId))

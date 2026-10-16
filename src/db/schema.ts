@@ -137,6 +137,7 @@ export const bookings = pgTable(
     numberOfParticipants: integer("number_of_participants").default(1),
     paymentStatus: paymentStatusEnum("payment_status").default("pending"),
     totalAmount: integer("total_amount").notNull().default(0),
+    amountPaid: integer("amount_paid").notNull().default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
