@@ -4,6 +4,7 @@ import { requireRole } from "../middleware/requireRoleMiddleware.js";
 import { markAsReadNotification } from "../controllers/notifications/markAsReadNotification.js";
 import { deleteNotification } from "../controllers/notifications/deleteNotification.js";
 import { sendAdminNotification } from "../controllers/notifications/sendAdminNotification.js";
+import { fetchUserNotifications } from "../controllers/notifications/fetchUserNotification.js";
 
 export const notificationsRoute = Router();
 
@@ -16,3 +17,4 @@ notificationsRoute.delete(
 );
 
 notificationsRoute.post("/suggestion", sendAdminNotification);
+notificationsRoute.get("/fetch-user", fetchUserNotifications);

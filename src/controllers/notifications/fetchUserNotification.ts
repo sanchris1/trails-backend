@@ -1,19 +1,23 @@
 import { Request, Response } from "express";
 import { db } from "../../index.js";
 import { notification } from "../../db/schema.js";
-import { eq, or } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
+import { getAdminId } from "../auth/fetchAdminId.js";
 
 export async function fetchUserNotifications(req: Request, res: Response) {
   try {
     const userId = req.userId;
 
+    const adminId = await getAdminId();
+
     const results = await db
       .select()
       .from(notification)
       .where(
-        or(
+        and(
           eq(notification.senderId, userId),
           eq(notification.recipientId, userId),
+          ne(notification.recipientId, adminId),
         ),
       );
 
