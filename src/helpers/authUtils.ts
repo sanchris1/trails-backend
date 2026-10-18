@@ -3,7 +3,7 @@ import crypto from "crypto";
 import { env } from "../config/env.js";
 
 export function generateAccessToken(userId: string): string {
-  return jwt.sign({ userId }, env.refreshToken!, {
+  return jwt.sign({ userId }, env.accessToken!, {
     expiresIn: "15m",
   });
 }

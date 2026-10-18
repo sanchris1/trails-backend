@@ -13,4 +13,5 @@ export const env = {
   betterAuthUrl: process.env.BETTER_AUTH_URL,
   cloudinaryApiSecret: process.env.CLOUDINARY_API_SECRET,
   refreshToken: process.env.REFRESH_TOKEN_SECRET,
+  accessToken: process.env.ACCESS_TOKEN_SECRET,
 } as const;
