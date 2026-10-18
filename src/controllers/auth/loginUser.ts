@@ -73,6 +73,12 @@ export async function loginUser(req: Request, res: Response) {
       expiresAt: expirationDate,
     });
 
+    console.log(
+      "Raw refresh token:",
+      !!rawRefreshToken,
+      rawRefreshToken?.slice?.(0, 12),
+    );
+
     res.cookie("refreshToken", rawRefreshToken, {
       httpOnly: true,
       secure: true,
