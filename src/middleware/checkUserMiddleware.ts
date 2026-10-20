@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { env } from "../config/env.js";
 
 interface TokenPayload {
   userId: string;
@@ -25,14 +26,18 @@ export async function checkUser(
       });
     }
 
-    const payload = jwt.verify(
-      token,
-      process.env.ACCESS_TOKEN_SECRET!,
-    ) as TokenPayload;
+    const payload = jwt.verify(token, env.accessToken!) as TokenPayload;
 
     req.userId = payload.userId;
     next();
-  } catch {
+  } catch (error) {
+    if (error instanceof jwt.TokenExpiredError) {
+      console.error("Access token expired");
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      console.error("Invalid access token:", error.message);
+    } else {
+      console.error("Access token verification failed:", error);
+    }
     return res.status(401).json({
       success: false,
       message: "Access token expired or invalid",
