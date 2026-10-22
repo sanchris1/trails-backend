@@ -18,7 +18,8 @@ export async function logoutUser(req: Request, res: Response) {
 
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      sameSite: "strict",
+      sameSite: "none",
+      path: "/",
       secure: true,
     });
 

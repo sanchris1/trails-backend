@@ -8,6 +8,8 @@ import cookieParser from "cookie-parser";
 export function createApplication() {
   const app = express();
 
+  app.set("trust proxy", 1);
+
   const allowedOrigins = [
     "http://localhost:3000",
     "https://trails-and-memoirs.vercel.app",

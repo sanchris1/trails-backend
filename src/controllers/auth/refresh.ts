@@ -5,7 +5,7 @@ import {
   hashToken,
 } from "../../helpers/authUtils.js";
 import { db } from "../../index.js";
-import { refreshTokens } from "../../db/schema.js";
+import { refreshTokens, user } from "../../db/schema.js";
 import { and, eq, gt } from "drizzle-orm";
 import { env } from "../../config/env.js";
 
@@ -64,7 +64,19 @@ export async function refresh(req: Request, res: Response) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.json({ accessToken: newAccessToken });
+    const [foundUser] = await db
+      .select({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        createdAt: user.createdAt,
+      })
+      .from(user)
+      .where(eq(user.id, storedToken.userId))
+      .limit(1);
+
+    return res.json({ accessToken: newAccessToken, user: foundUser });
   } catch (error) {
     console.log(error);
 

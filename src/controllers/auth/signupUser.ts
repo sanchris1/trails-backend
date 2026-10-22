@@ -80,7 +80,17 @@ export async function signupUser(req: Request, res: Response) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ accessToken, message: "User created successfully" });
+    res.json({
+      accessToken,
+      user: {
+        id: newlyCreatedUser.id,
+        name: newlyCreatedUser.name,
+        email: newlyCreatedUser.email,
+        role: newlyCreatedUser.role,
+        createdAt: newlyCreatedUser.createdAt,
+      },
+      message: "User created successfully",
+    });
   } catch (error) {
     console.log(error);
     return res.status(500).json({

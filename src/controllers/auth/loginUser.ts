@@ -81,7 +81,17 @@ export async function loginUser(req: Request, res: Response) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({ accessToken, message: "User logged in successfully" });
+    res.json({
+      accessToken,
+      user: {
+        id: existingUser.id,
+        name: existingUser.name,
+        email: existingUser.email,
+        role: existingUser.role,
+        createdAt: existingUser.createdAt,
+      },
+      message: "User logged in successfully",
+    });
   } catch (error) {
     console.log(error);
 
